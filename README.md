@@ -1,6 +1,6 @@
 All documentation for the workshop is best viewed from the github.io pages
 
-[Documentation](https://ucdavis-bioinformatics-training.github.io/2020-August-intro-scRNAseq/)
+[Documentation](https://ucdavis-bioinformatics-training.github.io/2021-March-Single-Cell-RNA-Seq-Analysis/)
 
 Single Cell RNA-Seq Analysis
 
