@@ -40,5 +40,3 @@ If you have any questions, please don’t hesitate to contact us at [training.bi
 ### Register
 
 [Register for Single Cell RNA-Seq at the Genome Center Event Registration site.](https://registration.genomecenter.ucdavis.edu/events/scRNAseq_march_2021/)
-
-Register for the August 2020 online [course](https://registration.genomecenter.ucdavis.edu/events/intro_scRNASeq_aug_2020_online/)
