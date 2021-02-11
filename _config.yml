@@ -23,9 +23,9 @@ navigation:
     url: https://support.10xgenomics.com/spatial-gene-expression/sample-prep/doc/demonstrated-protocol-visium-spatial-protocols-tissue-preparation-guide
 
   - heading: Support
-  - title: Using Slack in this workshop
+  - title: Slack
     url: base/slack
-  - title: Using Zoom in this workshop
+  - title: Zoom
     url: base/zoom
   - title: Cheat Sheets
     url: base/cheatSheetIndex
