@@ -146,4 +146,5 @@ In this case, x is declared within the scope of the function, so it does not exi
 
 In this case, x is declared in the user workspace, so you can use it after the function call has been completed. There is a general preference among the R community for using <- for assignment (other than in function signatures)
 
-spend 15m getting to know RStudio a little
+
+1. spend 15m getting to know RStudio a little

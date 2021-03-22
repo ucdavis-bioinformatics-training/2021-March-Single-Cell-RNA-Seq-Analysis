@@ -460,7 +460,7 @@ Section: [samples]
 | Column |	Description |
 |:---- |:--- |
 |sample_id	| A name to identify a multiplexed sample. Must be alphanumeric with hyphens and/or underscores, and less than 64 characters. Required for cell multiplexing libraries. |
-| cmo_ids |	The cell multiplexing oligo IDs used to multiplex this sample, separated by |. Required for cell multiplexing libraries. |
+| cmo_ids |	The cell multiplexing oligo IDs used to multiplex this sample, separated by. Required for cell multiplexing libraries. |
 | description |	Optional. A description for the sample. |
 
 An example of running multi on a 10X normal PBMC sample.
