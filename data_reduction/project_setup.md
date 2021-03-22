@@ -101,12 +101,12 @@ cd 00-RawData/
 ln -s /share/workshop/intro_scrnaseq/raw_data/00-SmRawData/PBMC2sm_S18* .
 ```
 
-This directory now contains a folder for each "sample" (in this case just 1) and the fastq files for each "sample" are in the sample folders.
+This directory now contains the reads for each "sample" (in this case just 1).
 
 **2b\.** lets create a sample sheet for the project, store sample names in a file called samples.txt
 
 ```bash
-ls > ../samples.txt
+echo PBMC2sm > ../samples.txt
 cat ../samples.txt
 ```
 
