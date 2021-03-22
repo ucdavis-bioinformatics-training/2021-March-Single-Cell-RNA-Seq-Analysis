@@ -1,7 +1,7 @@
 # Generating a Gene Expression Matrix
 
-Most analyses have two stages: data reduction and biological analysis.
-Statistical analyses of scRNA-seq data take as their starting point an __expression matrix__, where each row represents a gene and each column represents a sample (in scRNAseq a cell). Each entry in the matrix represents the number of reads (expression level) of a particular gene in a given sample (cell). In most cases the number of unique reads (post umi filtering) assigned to that gene in that sample/cell. Generating the expression matrix often involves some, or all, of the following.
+Most analyses have two stages: data reduction and data analysis.
+Statistical analyses of scRNA-seq data take as their starting point an __expression matrix__, where each row represents a gene and each column represents a sample (in scRNAseq columns are cells). Each entry in the matrix represents the number of reads (proxy for expression level) of a particular gene in a given sample (cell). In most cases the number of unique reads (post umi filtering) assigned to that gene in that sample/cell. Generating the expression matrix often involves some, or all, of the following.
 
 <div class="figure" style="text-align: center">
 <img src="figures/flowchart2.png" alt="Flowchart of the scRNAseq analysis" width="65%" />
@@ -10,14 +10,14 @@ Statistical analyses of scRNA-seq data take as their starting point an __express
 
 ### Preprocessing and mapping reads
 
-Raw fastq files first need to be preprocessed, extracting any elements that are a part of the sequence read.
+Raw fastq files first need to be preprocessed, extracting any elements that are a part of the sequence read and potentially "cleaned" with applications such as [`HTStream`](https://github.com/s4hts/HTStream).
 
 * Library Barcode (library Index) - Used to pool multiple libraries on one sequencing lane
 * Cell Barcode (10x Barcode) – Used to identify the cell the read came from
 * Unique Molecular Index (UMI) – Used to identify reads that arise during PCR replication
 * Sequencing Read – Used to identify the gene a read came from
 
-The remaining sequences are mapped to a reference genome. We tend to use the [STAR](https://github.com/alexdobin/STAR) aligner. For large full-transcript datasets from well annotated organisms (e.g. mouse, human) pseudo-alignment methods (e.g. [Kallisto](https://pachterlab.github.io/kallisto/), [Salmon](http://salmon.readthedocs.io/en/latest/salmon.html)) are also a good choice for alignment. For __full-length__ datasets with tens- or hundreds of thousands of reads per cell pseudo-aligners become more appealing since their run-time can be several orders of magnitude less than traditional aligners.
+The remaining sequences are mapped to a reference genome/trancriptome. We tend to use the [STAR](https://github.com/alexdobin/STAR) aligner, for large full-transcript datasets from well annotated organisms (e.g. mouse, human), pseudo-alignment methods (e.g. [Kallisto](https://pachterlab.github.io/kallisto/), [Salmon](http://salmon.readthedocs.io/en/latest/salmon.html)) are also a good choice for alignment. For __full-length__ datasets with tens- or hundreds of thousands of reads per cell pseudo-aligners become appealing since their run-time can be several orders of magnitude less than traditional aligners.
 
 __Note__, if _spike-ins_ are used, the _spike-in_ sequences should be added to the reference sequence prior to mapping.
 
@@ -28,10 +28,13 @@ After aligning sequence data to the genome we should evaluate the quality of the
 ### Gene Counting
 
 STAR, Kallisto, and Salmon all quantify the expression level of each gene for
-each cell as a part of its output. If UMIs were used, duplicates need to be first marked and then gene expression levels recounted. The packages (`UMI-tools`)[https://github.com/CGATOxford/UMI-tools) can be used to process and correct UMIs.
-
+each cell as a part of its output. If UMIs were used, duplicates need to be first marked and then gene expression levels recounted. The package [`UMI-tools`](https://github.com/CGATOxford/UMI-tools) can be used to process and correct UMIs.
 
 Specific steps to be performed are dependent on the type of library, the element layout of the read, and the sequencing parameters.
+
+
+[STAR](https://github.com/alexdobin/STAR), [Salmon](http://salmon.readthedocs.io/en/latest/salmon.html), [Kallisto/bustools](https://www.kallistobus.tools/) each have pipelines build specificlaly for processing single-cell datasets and 10X genomics data.
+
 
 ## scRNAseq Libraries
 
@@ -70,38 +73,44 @@ __Full-length__ capture tries to achieve a uniform coverage of each transcript (
 
 For smaller experiments < 5000 cells, the R packages [`SingleCellExperiment`](http://bioconductor.org/packages/SingleCellExperiment), [`scater`](http://bioconductor.org/packages/scater/), [`SC3`](http://bioconductor.org/packages/release/bioc/html/SC3.html) are good choices. For larger experiments (> 5000 cells), the R package [`Seurat`](http://satijalab.org/seurat/) offers a complete solution.
 
+If you prefer Python, [`scanpy`](https://scanpy.readthedocs.io/en/stable/) is a good choice.
+
+
 A nice page keeping track of single-cell software can be found [here](https://github.com/seandavi/awesome-single-cell).
 
 ## 10X Genomics generation of expression matrix with cellranger
 
 [cellranger](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger)
 
-10X Genomics cellranger uses the [STAR](https://github.com/alexdobin/STAR) aligner to map reads to a genome after first preprocessing them (extracting cell and UMI sequences).
+10X Genomics cellranger uses a fork of the [`STAR`](https://github.com/alexdobin/STAR) aligner, [`Orbit`](https://github.com/10XGenomics/orbit), to map reads to a genome after first preprocessing them (extracting cell and UMI sequences).
 
 <div class="figure" style="text-align: center">
 <img src="figures/10xread.png" alt="Elements to a 10x read" width="80%" />
 <p class="caption">Elements to a 10x read (V3)</p>
 </div>
 
-cellranger  version 3 has many sub-applications
+cellranger  version 6 has many sub-applications
+
 
 1. cellranger mkfastq  
 
-2. cellranger count  
-3. cellranger aggr  
-4. cellranger reanalyze  
-5. cellranger mat2csv  
+2. cellranger count
+3. cellranger vdj  
+4. cellranger multi
 
-6. cellranger mkgtf  
-7. cellranger mkref  
+5. cellranger aggr  
+6. cellranger reanalyze  
+7. cellranger mat2csv  
+8. targeted-compare
+9. targeted-depth
 
-8. cellranger vdj  
+10. cellranger mkref  
+11. cellranger mkgtf  
+12. cellranger mkvdjref  
 
-9. cellranger mkvdjref  
-
-10. cellranger testrun  
-11. cellranger upload  
-12. cellranger sitecheck  
+13. cellranger testrun  
+14. cellranger upload  
+15. cellranger sitecheck  
 
 ### Cell barcode and UMI filtering
 
@@ -113,19 +122,31 @@ cellranger  version 3 has many sub-applications
 	* Must not be a homopolymer, e.g. AAAAAAAAAA
 	* Must not contain N
 	* Must not contain bases with base quality < 10
-	*	UMIs that are 1 mismatch away from a higher-count UMI are corrected to that UMI if they share a cell barcode and gene.
+	* UMIs that are 1 mismatch away from a higher-count UMI are corrected to that UMI if they share a cell barcode and gene.
 
+
+### Read Trimming
+
+Cellranger only performs read trimming to 3' gene expression assays.
+
+A full length cDNA construct is flanked by the 30 bp template switch oligo (TSO) sequence, AAGCAGTGGTATCAACGCAGAGTACATGGG, on the 5' end and poly-A on the 3' end. Some fraction of sequencing reads are expected to contain either or both of these sequences, depending on the fragment size distribution of the sequencing library. Reads derived from short RNA molecules are more likely to contain either or both TSO and poly-A sequence than longer RNA molecules.
+
+In order to improve mapping, the TSO sequence is trimmed from the 5' end of read 2 and poly-A is trimmed from the 3' end prior to alignment.
+
+Tags ts:i and pa:i in the output BAM files indicate the number of TSO nucleotides trimmed from the 5' end of read 2 and the number of poly-A nucleotides trimmed from the 3' end, respectively. The trimmed bases are present in the sequence of the BAM record and are soft clipped in the CIGAR string.
 
 ### Alignment
 
 #### Genome Alignment
-cellranger uses an aligner called STAR, which performs splicing-aware alignment of reads to the genome. cellranger uses the transcript annotation GTF to bucket the reads into exonic, intronic, and intergenic, and by whether the reads align (confidently) to the genome. A read is exonic if at least 50% of it intersects an exon, intronic if it is non-exonic and intersects an intron, and intergenic otherwise.
+cellranger uses an aligner called Orbit (a wrapper around STAR), which performs splicing-aware alignment of reads to the genome. cellranger uses the transcript annotation GTF to bucket the reads into exonic, intronic, and intergenic, and by whether the reads align (confidently) to the genome. A read is exonic if at least 50% of it intersects an exon, intronic if it is non-exonic and intersects an intron, and intergenic otherwise.
 
 #### MAPQ adjustment
 For reads that align to a single exonic locus but also align to 1 or more non-exonic loci, the exonic locus is prioritized and the read is considered to be confidently mapped to the exonic locus with MAPQ 255.
 
 #### Transcriptome Alignment
 cellranger further aligns exonic reads to annotated transcripts, looking for compatibility. A read that is compatible with the exons of an annotated transcript, and aligned to the same strand, is considered mapped to the transcriptome. If the read is compatible with a single gene annotation, it is considered uniquely (confidently) mapped to the transcriptome. Only reads that are confidently mapped to the transcriptome are used for UMI counting.
+
+In certain cases, such as when the input to the assay consists of nuclei, there may be high levels of intronic reads generated by unspliced transcripts. In order to count these intronic reads, the cellranger count and cellranger multi pipelines can be run with the option 'include-introns'.
 
 ### UMI Counting
 
@@ -139,7 +160,7 @@ cellranger further aligns exonic reads to annotated transcripts, looking for com
 
 ### Filtering cells (the 10x way)
 
-cellranger 3.0 introduces and improved cell-calling algorithm that is better able to identify populations of low RNA content cells, especially when low RNA content cells are mixed into a population of high RNA content cells. For example, tumor samples often contain large tumor cells mixed with smaller tumor infiltrating lymphocytes (TIL) and researchers may be particularly interested in the TIL population. The new algorithm is based on the EmptyDrops method (Lun et al., 2018).
+cellranger 3.0 introduced and improved cell-calling algorithm that is better able to identify populations of low RNA content cells, especially when low RNA content cells are mixed into a population of high RNA content cells. For example, tumor samples often contain large tumor cells mixed with smaller tumor infiltrating lymphocytes (TIL) and researchers may be particularly interested in the TIL population. The new algorithm is based on the EmptyDrops method (Lun et al., 2018).
 
 The algorithm has two key steps:
 
@@ -153,22 +174,56 @@ In the second step, a set of barcodes with low UMI counts that likely represent 
 Below is an example of a challenging cell-calling scenario where 300 high RNA content 293T cells are mixed with 2000 low RNA content PBMC cells. On the left is the cell calling result with the cell calling algorithm prior to cellranger 3.0 and on the right is the current cellranger 3.0 result. You can see that low RNA content cells are successfully identified by the new algorithm.
 
 <p float="center">
-  <img src="figures/knee-plot-old-cell-calling.png" width="300" />
-  <img src="figures/knee-plot-new-cell-calling.png" width="300" />
+  <img src="figures/knee-plot-old-cell-calling.png" width="400" />
+  <img src="figures/knee-plot-new-cell-calling.png" width="400" />
 </p>
 
 ### Matrix output
 
-| Type			| Description |
-|:----- 		|:------ |
-| Raw	| gene-barcode matrices	Contains every barcode from fixed list of known-good barcode sequences. This includes background and non-cellular barcodes. |
-| Filtered		| gene-barcode matrices	Contains only detected cellular barcodes. |
+| Type	|		| Description |
+|:----- |:---		|:------ |
+| raw_feature_bc_matrix	| | folder containing gene-barcode matrices	Contains every barcode from fixed list of known-good barcode sequences that have at least 1 read. This includes background and non-cellular barcodes. |
+| filtered_feature_bc_matrix | | folder containing gene-barcode matrices	Contains only detected cellular barcodes. |
 
 With 3 files needed to completely describe each gene x cell matrix
 
 - matrix.mtx.gz
 - features.tsv.gz
 - barcode.tsv.gz
+
+
+### Matrix HDF5 output
+
+| Type	|		| Description |
+|:----- |:---		|:------ |
+| raw_feature_bc_matrix.h5	| | hdf5 file with gene-barcode matrices	Contains every barcode from fixed list of known-good barcode sequences that have at least 1 read. This includes background and non-cellular barcodes. |
+| filtered_feature_bc_matrix.h5 | | hdf5 file with gene-barcode matrices	Contains only detected cellular barcodes. |
+
+
+```
+(root)
+└── matrix [HDF5 group]
+    ├── barcodes
+    ├── data
+    ├── indices
+    ├── indptr
+    ├── shape
+    └── features [HDF5 group]
+        ├─ _all_tag_keys
+        ├─ target_sets [for Targeted Gene Expression]
+        │   └─ [target set name]
+        ├─ feature_type
+        ├─ genome
+        ├─ id
+        ├─ name
+        ├─ pattern [Feature Barcode only]
+        ├─ read [Feature Barcode only]
+        └─ sequence [Feature Barcode only]
+```
+
+Can be read into R or Python for downstream processing.
+
+The hdf5 has a number of advantages we'll talk more about when we get into data analysis.
 
 ### Bam output
 
@@ -182,10 +237,7 @@ With 3 files needed to completely describe each gene x cell matrix
 | UB	| Z		| Chromium molecular barcode sequence that is error-corrected among other molecular barcodes with the same cellular barcode and gene alignment. |
 | UR	| Z		| Chromium molecular barcode sequence as reported by the sequencer. |
 | UY	| Z		| Chromium molecular barcode read quality. Phred scores as reported by sequencer. |
-| BC	| Z		| Sample index read. |
-| QT	| Z		| Sample index read quality. Phred scores as reported by sequencer. |
 | TR	| Z		| Trimmed sequence. For the Single Cell 3' v1 chemistry, this is trailing sequence following the UMI on Read 2. For the Single Cell 3' v2 chemistry, this is trailing sequence following the cell and molecular barcodes on Read 1. |
-| TQ	| Z		| Trimmed sequence quality. Phred scores as reported by the sequencer. No longer present in V3 |
 
 The following TAG fields are present if a read maps to the genome __and__ overlaps an exon by at least one base pair. A read may align to multiple transcripts and genes, but it is only considered confidently mapped to the transcriptome it if mapped to a single gene.
 
@@ -197,6 +249,16 @@ The following TAG fields are present if a read maps to the genome __and__ overla
 | GN	| Z		| Semicolon-separated list of gene names that are compatible with this alignment. Gene names are specified with gene_name key in the reference GTF attribute column. |
 | MM	| i		| Set to 1 if the genome-aligner (STAR) originally gave a MAPQ < 255 (it multi-mapped to the genome) and cellranger changed it to 255 because the read overlapped exactly one gene. |
 | RE	| A		| Single character indicating the region type of this alignment (E = exonic, N = intronic, I = intergenic). |
+| pa	| i	 | The number of poly-A nucleotides trimmed from the 3' end of read 2. Up to 10% mismatches are permitted. |
+| ts	| i	 | The number of template switch oligo (TSO) nucleotides trimmed from the 5' end of read 2. Up to 3 mismatches are permitted. The 30-bp TSO sequence is AAGCAGTGGTATCAACGCAGAGTACATGGG. |
+| xf	| i	 | Extra alignment flags. The bits of this tag are interpreted as follows:  
+* 1 - The read is confidently mapped to a feature
+* 2 - The read maps to a feature that the majority of other reads with this UMI did not
+* 4 - This read pair maps to a discordant pair of genes, and is not treated as a UMI count
+* 8 - This read is representative for a transcriptomic molecule and can be treated as a UMI count
+* 16 - This read maps to exactly one feature, and is identical to bit 8 for transcriptomic reads. Notably, this bit is set when a feature barcode read is treated as a UMI count, while bit 8 is not
+* 32 - This read was removed by targeted UMI filtering.   
+|
 
 The following are feature barcoding TAG fields which are not aligned to the genome, but processed by the Feature Barcodng read processor. The BAM file will contain unaligned records for these reads, with the following tags representing the Feature Barcode sequence extracted from the read, and the feature reference it was matched to, if any. The BAM read sequence will contain all the bases outside of the cell barcode and UMI regions. V3 ONLY.
 

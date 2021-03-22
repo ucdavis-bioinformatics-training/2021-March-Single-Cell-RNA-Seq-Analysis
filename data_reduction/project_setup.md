@@ -147,7 +147,6 @@ and Read 2
 zless PBMC2sm_S18_L003_R2_001.fastq.gz
 ```
 
-
 Make sure you can identify which lines correspond to a single read and which lines are the header, sequence, and quality values. Press 'q' to exit this screen. Then, let's figure out the number of reads in this file. A simple way to do that is to count the number of lines and divide by 4 (because the record of each read uses 4 lines). In order to do this use cat to output the uncompressed file and pipe that to "wc" to count the number of lines:
 
 ```bash
