@@ -18,7 +18,7 @@ Participants will need access to a computer with a reliable connection to the in
 
 This workshop is generously supported by 10x Genomics.
 
-<img src="assets/10xgenomics_blue.svg" alt="10x Genomics" width="800px">
+<img src="https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2021-March-Single-Cell-RNA-Seq-Analysis/main/assets/img/10xgenomics_blue.svg" alt="10x Genomics" width="800px">
 
 ### FAQ
 
