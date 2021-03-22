@@ -183,9 +183,9 @@ Quick aside: what if I want to use same options repeatedly? and be lazy? You can
 
 Absolute path: always starts with ”/” - the root folder
 
-/share/workshop/msettles/cli
+/share/workshop/msettles/intro_scrnaseq/cli
 
-the folder (or file) "cli" in the folder "msettles" in the folder "workshop" in the folder "share" from the root folder.
+the folder (or file) "cli" in the folder "msettles" in the folder "intro_scrnaseq" in the folder "workshop" in the folder "share" from the root folder.
 
 Relative path: always relative to our current location.
 
@@ -335,7 +335,7 @@ submitButton2.addEventListener('click', function() {showResults(myQuestions2, qu
 
 ## Create and Destroy
 
-We already learned one command that will create a file, touch. Lets create a folder in /share/workshop for you to work in and then another directory cli. We will use the environment variable $USER, that contains your username.
+We already learned one command that will create a file, touch.
 
     cd  # home again
     echo $USER # echo to screen the contents of the variable $USER

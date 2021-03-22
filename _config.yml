@@ -17,10 +17,10 @@ navigation:
 #    url: https://raw.githubusercontent.com/ucdavis-bioinformatics-training/ucdavis-bioinformatics-training.presentations/master/singlecell/scRNAseq-expDesign_May_2020.pdf
 
   - heading: Support
-  - title: Slack
-    url: base/slack
   - title: Zoom
     url: base/zoom
+  - title: Slack
+    url: base/slack
   - title: Cheat Sheets
     url: base/cheatSheetIndex
   - title: Software and Links
