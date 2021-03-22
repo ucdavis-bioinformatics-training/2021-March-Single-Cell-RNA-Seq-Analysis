@@ -361,4 +361,112 @@ Cell ranger does produce a "pretty" html report with the same statistics and som
     4. Transfer the html file to your computer
     5. Transfer the matrix files and hdf5 file to your computer. (We will not use however.).
 	6. If time remain, run the script.
+
+### Cellranger features and multi pipeline
+
+Feature barcodes allow you to capture additional information within your cells by using an addition oligo on the GEM beads. This can be from Antibody capture, Crispr guide capture, or a custom capture (like barcoding).
+
+Do do so you need to pass a library csv file and a feature (only 1 feature possible at a time) reference file.
+
+    ```
+    cellranger count --id=sample \
+                   --libraries=library.csv \
+                   --transcriptome=/opt/refdata-gex-GRCh38-2020-A \
+                   --feature-ref=feature_ref.csv \
+                   --expect-cells=1000
+   ```
+
+#### Library csv file
+
+3 columns
+
+    * fastq - path to fastq files
+    * sample - name of the fastq file
+    * library_type one of Gene Expression, Custom, Antibody Capture, or CRISPR Guide Capture
+
+
+    ```
+    fastqs,sample,library_type
+    /opt/foo/,GEX_sample1,Gene Expression
+    /opt/foo/,CRISPR_sample1,CRISPR Guide Capture
+    ```
+
+#### Feature Reference file
+
+    * id - Unique ID
+    * name - Human-readable name
+    * read - Which read do I expect to find the feature barcode in
+    * pattern - The pattern within the read
+    * sequence - The barcode sequence
+    * feature_type - Type of feature, same as above
+
+    ```
+    id,name,read,pattern,sequence,feature_type
+    CD3,CD3_TotalC,R2,^NNNNNNNNNN(BC)NNNNNNNNN,CTCATTGTAACTCCT,Antibody Capture
+    CD19,CD19_TotalC,R2,^NNNNNNNNNN(BC)NNNNNNNNN,CTGGGCAATTACTCG,Antibody Capture
+    CD45RA,CD45RA_TotalC,R2,^NNNNNNNNNN(BC)NNNNNNNNN,TCAATCCTTCCGCTT,Antibody Capture
+    CD4,CD4_TotalC,R2,^NNNNNNNNNN(BC)NNNNNNNNN,TGTTCCCGCTCAACT,Antibody Capture
+    CD8a,CD8a_TotalC,R2,^NNNNNNNNNN(BC)NNNNNNNNN,GCTGCGCTTTCCATT,Antibody Capture
+    ```
+
+See [Feature Barcode Analysis](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis#feature-types) for more information.
+
+#### Cellranger multi
+
+Cellranger 6.0 introduced the multi pipeline wich is requried for use with cellplex, can can be used to 'join' features, vdj, and counts into a single analysis.
+
+cellranger multi requires and id for output and a configuration csv (which really isn't a csv).
+
+Multi Config CSV
+
+Section: [gene-expression]
+
+| Field |	Description |
+|:---- |:--- |
+| reference	| Path of folder containing 10x-compatible reference. Required for gene expression and Feature Barcode libraries. |
+|cmo-set	| Optional. CMO set CSV file, declaring CMO constructs and associated barcodes.|
+| target-panel |	Optional. Path to a target panel CSV file or name of a 10x Genomics fixed gene panel (pathway, pan-cancer, immunology, neuroscience). |
+|no-target-umi-filter |	Optional. Disable targeted UMI filtering stage. Default: false. |
+| r1-length | Optional. Hard trim the input Read 1 of gene expression libraries to this length before analysis. Default: do not trim Read 1. |
+| r2-length |	Optional. Hard trim the input Read 2 of gene expression libraries to this length before analysis. Default: do not trim Read 2. |
+| chemistry |	Optional. Assay configuration. NOTE: by default, the assay configuration is detected automatically, which is the recommended mode. Users usually will not need to specify a chemistry. Options are: 'auto' for autodetection, 'threeprime' for Single Cell 3', 'fiveprime' for Single Cell 5', 'SC3Pv1' or 'SC3Pv2' or 'SC3Pv3' for Single Cell 3' v1/v2/v3, 'SC5P-PE' or 'SC5P-R2' for Single Cell 5', paired-end/R2-only, 'SC-FB' for Single Cell Antibody-only 3' v2 or 5'. Default: auto. |
+| expect-cells |	Optional. Expected number of recovered cells. Default: 3000. |
+| force-cells	| Optional. Force pipeline to use this number of cells, bypassing cell detection. Default: detect cells using EmptyDrops. |
+| include-introns	| Optional. Include intronic reads in count. Default: false |
+| no-secondary |	Optional. Disable secondary analysis, e.g. clustering. Default: false. |
+| no-bam |	Optional. Do not generate a bam file. Default: false. |
+
+
+Section: [feature]
+
+| Field |	Description |
+|:---- |:--- |
+| reference |	Feature reference CSV file, declaring Feature Barcode constructs and associated barcodes. Required for Feature Barcode libraries, otherwise optional. |
+| r1-length	| Optional. Hard trim the input Read 1 of Feature Barcode libraries to this length before analysis. Default: do not trim Read 1. |
+| r2-length	| Optional. Hard trim the input Read 2 of Feature Barcode libraries to this length before analysis. Default: do not trim Read 2. |
+
+Section: [libraries] (see also Specifying Input FASTQ Files for cellranger multi)
+
+| Column |	Description |
+|:---- |:--- |
+| fastq_id	| Required. The Illumina sample name to analyze. This will be as specified in the sample sheet supplied to mkfastq or bcl2fastq. |
+| fastqs |	Required. The folder containing the FASTQ files to be analyzed. Generally, this will be the fastq_path folder generated by cellranger mkfastq. |
+| lanes |	Optional. The lanes associated with this sample, separated by |. Defaults to using all lanes. |
+| feature_types |	Required. The underlying feature type of the library, which must be one of ‘Gene Expression’ (3' and 5'), ‘VDJ’ (5' only), ‘VDJ-T’ (5' only), ‘VDJ-B’ (5' only), ‘Antibody Capture’ (3' and 5'), ‘CRISPR Guide Capture’ (3' only), or ‘Multiplexing Capture’ (3' only). |
+| subsample_rate | Optional. The rate at which reads from the provided FASTQ files are sampled. Must be strictly greater than 0 and less than or equal to 1. |
+
+Section: [samples]
+
+| Column |	Description |
+|:---- |:--- |
+|sample_id	| A name to identify a multiplexed sample. Must be alphanumeric with hyphens and/or underscores, and less than 64 characters. Required for cell multiplexing libraries. |
+| cmo_ids |	The cell multiplexing oligo IDs used to multiplex this sample, separated by |. Required for cell multiplexing libraries. |
+| description |	Optional. A description for the sample. |
+
+    **Optional excercise**
+
+    1. Create a configuration csv file for this analysis and run cellranger multi instead of cellranger count
+
+
+
 ---
