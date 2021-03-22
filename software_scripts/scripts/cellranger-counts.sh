@@ -63,7 +63,7 @@ call="cellranger count \
 ## Echo the call
 echo $call
 ## Evaluate the call
-eval $call
+#eval $call
 
 ## Record the start time, and output runtime
 end=`date +%s`

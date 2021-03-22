@@ -317,7 +317,7 @@ Cell ranger does produce a "pretty" html report with the same statistics and som
 
 ## Exercises
 
-1. Log into tadpole with the username/password given
+1. Log into tadpole with the username/password
 
     ```bash
     cd /share/workshop/intro_scrnaseq/$USER/scrnaseq_example
@@ -325,19 +325,32 @@ Cell ranger does produce a "pretty" html report with the same statistics and som
 
 2. Load and review cellranger's sub-applications and help docs
 
-3. Review the [cellranger-counts.sh](https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-August-intro-scRNAseq/master/software_scripts/scripts/cellranger-counts.sh) script used to map fastq files.
+    ```bash
+    export PATH=/share/workshop/intro_scrnaseq/software/cellranger-6.0.0/bin:$PATH
+    ```
+
+3. Review the [cellranger-counts.sh](https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2021-March-Single-Cell-RNA-Seq-Analysis/master/software_scripts/scripts/cellranger-counts.sh) script used to map fastq files.
 
 4. Copy contents of the script to your **scrnaseq_example** folder and do a test run.
+
+    ```bash
+    wget https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2021-March-Single-Cell-RNA-Seq-Analysis/master/software_scripts/scripts/cellranger-counts.sh cellranger-counts.sh
+    ```
+
+    update the email address in the script if you like.
+
+    ```bash
+    sbatch cellranger-counts.sh
+    ```
 
 5. Link completed result folders to your scrnaseq_example folders.  
 
     ```bash
     cd /share/workshop/intro_scrnaseq/$USER/scrnaseq_example
-    ln -s /share/biocore/workshops/2020_scRNAseq/2017_10X_mouse_comparative_V2 .  
-    ln -s /share/biocore/workshops/2020_scRNAseq/2017_10X_mouse_comparative_V3 .  
+    ln -s /share/workshop/intro_scrnaseq/raw_data/PBMC2sm PBMC2sm_copy  
     ```
 
-	1. In the folder 2017_10X_mouse_comparative_V2, which output folders/files were generated from this script?
+	1. In the folder PBMC2sm_copy, which output folders/files were generated from this script?
 	2. Review the metrics_summary.csv file
 		1. What where the total number of reads in this sample?
 		2. Reads Mapped Confidently to transcriptome?
@@ -345,17 +358,7 @@ Cell ranger does produce a "pretty" html report with the same statistics and som
 		4. Mean Reads per Cell?
 		5. Median UMI Counts per Cell?
 	3. head the files under raw_gene_bc_matrices and filtered_gene_bc_matrices
-	4. If time remain, mock run the script.
-	5. __HOMEWORK__: Using samtools and rseqc evaluate the mapping file.
-
-    ```bash
-    module load rseqc
-    module load samtools
-    bam_stat.py -i possorted_genome_bam.bam > sample_rna_bam.rseqc
-    samtools flagstat possorted_genome_bam.bam > sample_bam.flagstat
-    samtools stats possorted_genome_bam.bam > sample_bam.stats
-    ```
-
-  6. Now do the same for the V3 folder and compare the two.
-
+    4. Transfer the html file to your computer
+    5. Transfer the matrix files and hdf5 file to your computer. (We will not use however.).
+	6. If time remain, run the script.
 ---
