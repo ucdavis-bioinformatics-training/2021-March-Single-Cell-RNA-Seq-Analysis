@@ -136,7 +136,7 @@ ls -lah *
 Read 1
 
 ```bash
-cd 00-SmRawData/
+cd 00-RawData/
 zless PBMC2sm_S18_L003_R1_001.fastq.gz
 zless PBMC2sm_S18_L003_R2_001.fastq.gz
 ```
