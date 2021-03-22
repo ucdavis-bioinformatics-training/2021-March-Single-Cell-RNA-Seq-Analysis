@@ -239,7 +239,9 @@ The hdf5 has a number of advantages we'll talk more about when we get into data 
 | UY	| Z		| Chromium molecular barcode read quality. Phred scores as reported by sequencer. |
 | TR	| Z		| Trimmed sequence. For the Single Cell 3' v1 chemistry, this is trailing sequence following the UMI on Read 2. For the Single Cell 3' v2 chemistry, this is trailing sequence following the cell and molecular barcodes on Read 1. |
 
+
 The following TAG fields are present if a read maps to the genome __and__ overlaps an exon by at least one base pair. A read may align to multiple transcripts and genes, but it is only considered confidently mapped to the transcriptome it if mapped to a single gene.
+
 
 | Tag	| Type	| Description
 |:----- |:------ |:----- |
