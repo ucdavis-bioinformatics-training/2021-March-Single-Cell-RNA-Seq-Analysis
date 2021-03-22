@@ -16,6 +16,10 @@ This workshop will be held online from 9:00 am to 5:00 pm each day.
 
 Participants will need access to a computer with a reliable connection to the internet, a current versions of [R version](https://cloud.r-project.org/) and [Rstudio](https://rstudio.com/products/rstudio/download/#download) installed, and an application that allows them to ssh into a server (e.g. Bash for Windows, or Terminal for Apple).
 
+This workshop is generously supported by 10x Genomics.
+
+<img src="assets/10xgenomics_blue.svg" alt="10x Genomics" width="800px">
+
 ### FAQ
 
 **Who should attend?** … Prior course participants have included faculty, post docs, grad students, staff, and industry researchers.
