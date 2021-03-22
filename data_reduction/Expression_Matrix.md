@@ -288,36 +288,27 @@ Summary of the alignment and assignment of reads to cells and genes are present 
 | Median Genes per Cell	| The median number of genes detected (with nonzero UMI counts) across all cell-associated barcodes. |
 | Number of Reads	| Total number of sequenced reads. |
 | Valid Barcodes	| Fraction of reads with cell-barcodes that match the whitelist. |
-| Reads Mapped to Genome | Fraction of reads that mapped to the genome.|
-| Reads Mapped Confidently to Genome | Reads Mapped Confidently to Genome. |
-| Reads Mapped Confidently to Transcriptome	| Fraction of reads that mapped to a unique gene in the transcriptome with a high mapping quality score as reported by the aligner. |
-| Reads Mapped Confidently to Exonic Regions	| Fraction of reads that mapped to the exonic regions of the genome with a high mapping quality score as reported by the aligner. |
-| Reads Mapped Confidently to Intronic Regions	| Fraction of reads that mapped to the intronic regions of the genome with a high mapping quality score as reported by the aligner. |
-| Reads Mapped Confidently to Intergenic Regions	| Fraction of reads that mapped to the intergenic regions of the genome with a high mapping quality score as reported by the aligner. |
-| Reads Mapped Antisense to Gene | Fraction of reads confidently mapped to the transcriptome, but on the opposite strand of their annotated gene. A read is counted as antisense if it has any alignments that are consistent with an exon of a transcript but antisense to it, and has no sense alignments. |
 | Sequencing Saturation	| The fraction of reads originating from an already-observed UMI. This is a function of library complexity and sequencing depth. More specifically, this is the fraction of confidently mapped, valid cell-barcode, valid UMI reads that had a non-unique (cell-barcode, UMI, gene). This metric was called "cDNA PCR Duplication" in versions of cellranger prior to 1.2. |
 | Q30 Bases in Barcode	| Fraction of bases with Q-score at least 30 in the cell barcode sequences. This is the i7 index (I1) read for the Single Cell 3' v1 chemistry and the R1 read for the Single Cell 3' v2 chemistry. |
 | Q30 Bases in RNA Read	| Fraction of bases with Q-score at least 30 in the RNA read sequences. This is Illumina R1 for the Single Cell 3' v1 chemistry and Illumina R2 for the Single Cell 3' v2 chemistry. |
 | Q30 Bases in Sample Index	| Fraction of bases with Q-score at least 30 in the sample index sequences. This is the i5 index (I2) read for the Single Cell 3' v1 chemistry and the i7 index (I1) read for the Single Cell 3' v2 chemistry. |
 | Q30 Bases in UMI	| Fraction of bases with Q-score at least 30 in the UMI sequences. This is the R2 read for the Single Cell 3' v1 chemistry and the R1 read for the Single Cell 3' v2 chemistry. |
+| Reads Mapped to Genome | Fraction of reads that mapped to the genome.|
+| Reads Mapped Confidently to Genome | Reads Mapped Confidently to Genome. |
+| Reads Mapped Confidently to Intergenic Regions	| Fraction of reads that mapped to the intergenic regions of the genome with a high mapping quality score as reported by the aligner. |
+| Reads Mapped Confidently to Intronic Regions	| Fraction of reads that mapped to the intronic regions of the genome with a high mapping quality score as reported by the aligner. |
+| Reads Mapped Confidently to Exonic Regions	| Fraction of reads that mapped to the exonic regions of the genome with a high mapping quality score as reported by the aligner. |
+| Reads Mapped Confidently to Transcriptome	| Fraction of reads that mapped to a unique gene in the transcriptome with a high mapping quality score as reported by the aligner. |
+| Reads Mapped Antisense to Gene | Fraction of reads confidently mapped to the transcriptome, but on the opposite strand of their annotated gene. A read is counted as antisense if it has any alignments that are consistent with an exon of a transcript but antisense to it, and has no sense alignments. |
 | Fraction Reads in Cells	| The fraction of cell-barcoded, confidently mapped reads with cell-associated barcodes. |
 | Total Genes Detected	| The number of genes with at least one UMI count in any cell. |
 | Median UMI Counts per Cell	| The median number of total UMI counts across all cell-associated barcodes. |
 
 ### 10X genomics html reports
 
-Cell ranger does produce a pretty html report with the same statistics and some "analysis".
+Cell ranger does produce a "pretty" html report with the same statistics and some "analysis".
 
-[Cell Ranger V2 web summary](web_summaryV2.html)
-
-[Cell Ranger V3 web summary](web_summaryV3.html)
-
-#### CellRanger V4 Updates
-
-* Targeted Gene Expression analysis (New application)
-* When analyzing 3’ Gene Expression data, Cell Ranger 4.0 trims the template switch oligo (TSO) sequence from the 5’ end of Read-2 and the poly-A sequence from the 3’ end before aligning reads to the reference transcriptome. This behavior is different from Cell Ranger 3.1, which does not perform any trimming. Reports improved mapping.
-
-[Cell Ranger V4 web summary](web_summaryV4.html)
+[Cell Ranger V6 web summary](web_summary.html)
 
 ## Exercises
 
