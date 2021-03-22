@@ -98,7 +98,7 @@ mkdir -p /share/workshop/intro_scrnaseq/$USER/scrnaseq_example
 cd /share/workshop/intro_scrnaseq/$USER/scrnaseq_example
 mkdir 00-RawData
 cd 00-RawData/
-ln -s :/share/workshop/intro_scrnaseq/raw_data/00-SmRawData/PBMC2sm_S18* .
+ln -s /share/workshop/intro_scrnaseq/raw_data/00-SmRawData/PBMC2sm_S18* .
 ```
 
 This directory now contains a folder for each "sample" (in this case just 1) and the fastq files for each "sample" are in the sample folders.
@@ -126,18 +126,27 @@ ls *
 **3c\.** Lets get a better look at all the files in all of the directories.
 
 ```bash
-ls -lah */*
+ls -lah *
 ```
 
 ---
 
 **4\.** View the contents of the files using the 'less' command, when gzipped used 'zless' (which is just the 'less' command for gzipped files, q to exit):
 
+Read 1
+
 ```bash
 cd 00-SmRawData/
 zless PBMC2sm_S18_L003_R1_001.fastq.gz
 zless PBMC2sm_S18_L003_R2_001.fastq.gz
 ```
+
+and Read 2  
+
+```bash
+zless PBMC2sm_S18_L003_R2_001.fastq.gz
+```
+
 
 Make sure you can identify which lines correspond to a single read and which lines are the header, sequence, and quality values. Press 'q' to exit this screen. Then, let's figure out the number of reads in this file. A simple way to do that is to count the number of lines and divide by 4 (because the record of each read uses 4 lines). In order to do this use cat to output the uncompressed file and pipe that to "wc" to count the number of lines:
 
