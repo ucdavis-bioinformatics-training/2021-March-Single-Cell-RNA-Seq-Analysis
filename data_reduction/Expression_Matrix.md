@@ -253,14 +253,17 @@ The following TAG fields are present if a read maps to the genome __and__ overla
 | RE	| A		| Single character indicating the region type of this alignment (E = exonic, N = intronic, I = intergenic). |
 | pa	| i	 | The number of poly-A nucleotides trimmed from the 3' end of read 2. Up to 10% mismatches are permitted. |
 | ts	| i	 | The number of template switch oligo (TSO) nucleotides trimmed from the 5' end of read 2. Up to 3 mismatches are permitted. The 30-bp TSO sequence is AAGCAGTGGTATCAACGCAGAGTACATGGG. |
-| xf	| i	 | Extra alignment flags. The bits of this tag are interpreted as follows:  
+| xf	| i	 | Extra alignment flags. |
+
+
+The bits to the extra alignment flags are interpreted as follows:  
 * 1 - The read is confidently mapped to a feature
 * 2 - The read maps to a feature that the majority of other reads with this UMI did not
 * 4 - This read pair maps to a discordant pair of genes, and is not treated as a UMI count
 * 8 - This read is representative for a transcriptomic molecule and can be treated as a UMI count
 * 16 - This read maps to exactly one feature, and is identical to bit 8 for transcriptomic reads. Notably, this bit is set when a feature barcode read is treated as a UMI count, while bit 8 is not
 * 32 - This read was removed by targeted UMI filtering.   
-|
+
 
 The following are feature barcoding TAG fields which are not aligned to the genome, but processed by the Feature Barcodng read processor. The BAM file will contain unaligned records for these reads, with the following tags representing the Feature Barcode sequence extracted from the read, and the feature reference it was matched to, if any. The BAM read sequence will contain all the bases outside of the cell barcode and UMI regions. V3 ONLY.
 
