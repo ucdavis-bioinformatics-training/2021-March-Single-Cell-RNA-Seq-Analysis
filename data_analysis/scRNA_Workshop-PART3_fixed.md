@@ -196,7 +196,7 @@ DimPlot(object = experiment.test.regress, group.by = "batchid", reduction = "tsn
 ## Get the next Rmd file
 
 ```r
-download.file("https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2020-August-intro-scRNAseq/master/data_analysis/scRNA_Workshop-PART4.Rmd", "scRNA_Workshop-PART4.Rmd")
+download.file("https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2021-March-Single-Cell-RNA-Seq-Analysis/master/data_analysis/scRNA_Workshop-PART4.Rmd", "scRNA_Workshop-PART4.Rmd")
 ```
 
 ## Session Information
