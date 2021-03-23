@@ -113,7 +113,7 @@ In the R console run the following command to download and extract the dataset (
 
 ```r
 options(timeout=1200)
-download.file("https://bioshare.bioinformatics.ucdavis.edu/bioshare/download/4vn7r610cf5d5dv/intro2singlecell_March2021.zip", "intro2singlecell_March2021.zip", "intro2singlecell_March2021.zip")
+download.file("https://bioshare.bioinformatics.ucdavis.edu/bioshare/download/4vn7r610cf5d5dv/intro2singlecell_March2021.zip", "intro2singlecell_March2021.zip")
 system("unzip intro2singlecell_March2021.zip") # works in Linux and Mac, not sure about Windows"
 ```
 
