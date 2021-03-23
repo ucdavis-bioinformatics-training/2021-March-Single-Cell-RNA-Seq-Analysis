@@ -13,8 +13,8 @@ navigation:
     url: base/schedule
   - title: Talk by Diana Burkhat-Waco from 10x Genomics
     url: base/2021_SingleCell_SampleTalk_DBurkart_March.pdf
-#  - title: What is Bioinformatics/Genomics?
-#    url: https://raw.githubusercontent.com/ucdavis-bioinformatics-training/ucdavis-bioinformatics-training.presentations/master/genomics/Genomics_a_perspective_May_2020.pdf
+  - title: What is Bioinformatics/Genomics?
+    url: https://raw.githubusercontent.com/ucdavis-bioinformatics-training/ucdavis-bioinformatics-training.presentations/master/genomics/Genomics_a_perspective_Oct_2020.pdf
 #  - title: Experimental Design and Cost Estimation
 #    url: https://raw.githubusercontent.com/ucdavis-bioinformatics-training/ucdavis-bioinformatics-training.presentations/master/singlecell/scRNAseq-expDesign_May_2020.pdf
 
@@ -42,9 +42,9 @@ navigation:
   - title: Generating Expression Matrix
     url: data_reduction/Expression_Matrix
 
-#  - heading: scRNAseq Analysis
-#  - title: Prepare scRNAseq Analysis
-#    url: data_analysis/scrna_analysis_prepare
+  - heading: scRNAseq Analysis
+  - title: Prepare scRNAseq Analysis
+    url: data_analysis/scrna_analysis_prepare
 #  - title: scRNAseq Analysis - PART1
 #    url: data_analysis/scRNA_Workshop-PART1_fixed
 #  - title: scRNAseq Analysis - PART2
