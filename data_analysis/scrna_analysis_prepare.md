@@ -78,6 +78,8 @@ if (!any(rownames(installed.packages()) == "WGCNA")){
   BiocManager::install("WGCNA")
 }
 
+## All of thse should now load without error.
+
 library(rmarkdown)
 library(tinytex)
 library(Seurat)
@@ -95,31 +97,37 @@ library(sva)
 library(scran)
 library(WGCNA)
 
-
 sessionInfo()
 ```
 
 ### Download the template Markdown workshop document PART1 and open it.
 
-In the R console run the following command
+In the R console run the following command to download part 1 of data analysis
 ```r
 download.file("https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2021-March-Single-Cell-RNA-Seq-Analysis/master/data_analysis/scRNA_Workshop-PART1.Rmd", "scRNA_Workshop-PART1.Rmd")
 ```
 
 ### Download the data for the workshop, extract it.
 
-In the R console run the following command.
+In the R console run the following command to download and extract the dataset (Little over 1Gb file.
+
 ```r
-download.file("https://raw.githubusercontent.com/ucdavis-bioinformatics-training/2021-March-Single-Cell-RNA-Seq-Analysis/master/datasets/expression_tables_cellrangerV3.zip", "expression_tables_cellrangerV3.zip")
-system("unzip expression_tables_cellrangerV3.zip") # works in Linux and Mac, not sure about Windows"
+options(timeout=1200)
+download.file("https://bioshare.bioinformatics.ucdavis.edu/bioshare/download/4vn7r610cf5d5dv/intro2singlecell_March2021.zip", "intro2singlecell_March2021.zip", "intro2singlecell_March2021.zip")
+system("unzip intro2singlecell_March2021.zip") # works in Linux and Mac, not sure about Windows"
 ```
 
+If you timed out on the download, increase 1200 to something higher. If the system command didn't work to extract the zip file, navigate to the folder you downloaded the data in and manually unzip the archive file
+
+** The Dataset will only be available for download during this course **
+
+    )
 ### Edit the file YAML portion
 
 The top YAML (YAML ain't markup language) portion of the doc tells RStudio how to parse the document.
 
 <pre><code>---
-title: "Single Cell RNAseq Part 1"
+title: "Introduction to Single Cell RNAseq Part 1"
 author: your_name
 date: current_date
 output:
@@ -131,3 +139,6 @@ output:
 Your RStudio should look something like this
 
 <img src="figures/RStudio.png" alt="RStudio" width="80%"/>
+
+
+Now spend a few minutes navigating through our data, how may samples are there? Find the hdf5 file and the matrix files. View the html files and lets discuss.
