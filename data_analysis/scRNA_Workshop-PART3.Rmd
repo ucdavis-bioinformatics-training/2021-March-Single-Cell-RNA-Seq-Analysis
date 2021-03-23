@@ -1,6 +1,6 @@
 ---
-title: "Single Cell RNAseq Part 3"
-author: "Bioinformatics Core"
+title: "Introduction to Single Cell RNAseq Part 3"
+author: "UCD Bioinformatics Core"
 output:
     html_document:
       keep_md: TRUE
@@ -20,6 +20,7 @@ rand.genes <- sample(1:nrow(experiment.test), 500,replace = F)
 mat <- as.matrix(GetAssayData(experiment.test, slot="data"))
 mat[rand.genes,experiment.test$batchid=="Batch2"] <- mat[rand.genes,experiment.test$batchid=="Batch2"] + 0.22
 experiment.test = SetAssayData(experiment.test, slot="data", new.data= mat )
+rm(mat)
 ```
 
 ## Exploring Batch effects, none, Seurat [vars.to.regress]

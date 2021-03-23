@@ -1,10 +1,11 @@
 ---
-title: "Single Cell RNAseq Part 2"
-author: "Bioinformatics Core"
+title: "Introduction to Single Cell RNAseq Part 2"
+author: "UCD Bioinformatics Core"
 output:
     html_document:
       keep_md: TRUE
 ---
+
 ## Load libraries
 ```{r, warning=FALSE,error=FALSE,message=FALSE}
 library(Seurat)
@@ -23,20 +24,28 @@ experiment.aggregate
 
 Show 5% quantiles for number of genes per cell per sample
 ```{r}
-do.call("cbind", tapply(experiment.aggregate$nFeature_RNA, Idents(experiment.aggregate),quantile,probs=seq(0,1,0.05)))
-RidgePlot(experiment.aggregate, features="nFeature_RNA")
+kable(do.call("cbind", tapply(experiment.aggregate$nFeature_RNA, 
+                      Idents(experiment.aggregate),quantile,probs=seq(0,1,0.05))),
+      caption = "5% Quantiles of Genes/Cell by Sample") %>% kable_styling()
 ```
 
 Show 5% quantiles for number of UMI per cell per sample
 ```{r}
-do.call("cbind", tapply(experiment.aggregate$nCount_RNA, Idents(experiment.aggregate),quantile,probs=seq(0,1,0.05)))
-RidgePlot(experiment.aggregate, features="nCount_RNA")
+kable(do.call("cbind", tapply(experiment.aggregate$nCount_RNA, 
+                                      Idents(experiment.aggregate),quantile,probs=seq(0,1,0.05))),
+      caption = "5% Quantiles of UMI/Cell by Sample") %>% kable_styling()
 ```
 
 Show 5% quantiles for number of mitochondrial percentage per cell per sample
 ```{r}
-round(do.call("cbind", tapply(experiment.aggregate$percent.mito, Idents(experiment.aggregate),quantile,probs=seq(0,1,0.05))), digits = 3)
-RidgePlot(experiment.aggregate, features="percent.mito")
+kable(round(do.call("cbind", tapply(experiment.aggregate$percent.mito, Idents(experiment.aggregate),quantile,probs=seq(0,1,0.05))), digits = 3),
+      caption = "5% Quantiles of Percent Mitochondria by Sample") %>% kable_styling()
+```
+
+plot ridgeplots of the same data
+
+```{r}
+RidgePlot(experiment.aggregate, features=c("nFeature_RNA","nCount_RNA", "percent.mito"), ncol = 2)
 ```
 
 
@@ -72,6 +81,10 @@ experiment.aggregate <- subset(experiment.aggregate, nCount_RNA >= 500 & nCount_
 experiment.aggregate
 ```
 
+Lets se the ridgeplots now after filtering
+```{r}
+RidgePlot(experiment.aggregate, features=c("nFeature_RNA","nCount_RNA", "percent.mito"), ncol = 2)
+```
 ### You may also want to filter out additional genes.
 
 When creating the base Seurat object we did filter out some genes, recall _Keep all genes expressed in >= 10 cells_. After filtering cells and you may want to be more aggressive with the gene filter. Seurat doesn't supply such a function (that I can find), so below is a function that can do so, it filters genes requiring a min.value (log-normalized) in at least min.cells, here expression of 1 in at least 400 cells.
@@ -94,9 +107,13 @@ FilterGenes <-
 
 experiment.aggregate.genes <- FilterGenes(object = experiment.aggregate, min.value = 1, min.cells = 400)
 experiment.aggregate.genes
+rm(experiment.aggregate.genes)
 ```
 
+## Lets reduce the dataset down to 1000 cells per sample for time
 ```{r}
+table(Idents(experiment.aggregate))
+experiment.aggregate <- experiment.aggregate[,unlist(sapply(split(seq_along(Cells(experiment.aggregate)), experiment.aggregate$orig.ident), sample, size=1000, simplify = F))]
 table(Idents(experiment.aggregate))
 ```
 
@@ -115,76 +132,43 @@ experiment.aggregate <- NormalizeData(
   scale.factor = 10000)
 ```
 
-
-## Calculate cell cycle using scran, add to meta data
-(Scialdone A, Natarajana KN, Saraiva LR et al. (2015). Computational assignment of cell-cycle stage from single-cell transcriptome data. Methods 85:54–61])[https://pubmed.ncbi.nlm.nih.gov/26142758/]
-
-Using the package scran, get the mouse cell cycle markers and a mapping of m
-**There may be issues with timeout for the Biomart server, just keep trying**
-```{r}
-mm.pairs <- readRDS(system.file("exdata", "mouse_cycle_markers.rds", package="scran"))
-# Convert to matrix for use in cycle
-mat <- as.matrix(GetAssayData(experiment.aggregate))
-
-# Convert rownames to ENSEMBL IDs, Using biomaRt
-ensembl<- useEnsembl(biomart = "ensembl", dataset = "mmusculus_gene_ensembl", mirror = "uswest")
-
-anno <- getBM( values=rownames(mat), attributes=c("mgi_symbol","ensembl_gene_id") , filters= "mgi_symbol"  ,mart=ensembl)
-
-ord <- match(rownames(mat), anno$mgi_symbol) # use anno$mgi_symbol if via biomaRt
-rownames(mat) <- anno$ensembl_gene_id[ord] # use anno$ensembl_gene_id if via biomaRt
-drop <- which(is.na(rownames(mat)))
-mat <- mat[-drop,]
-cycles <- scran::cyclone(mat, pairs=mm.pairs)
-tmp <- data.frame(cell.cycle = cycles$phases)
-rownames(tmp) <- colnames(mat)
-experiment.aggregate <- AddMetaData(experiment.aggregate, tmp)
-```
-
-#### Table of cell cycle (scran)
-
-```{r}
-table(experiment.aggregate@meta.data$cell.cycle) %>% kable(caption = "Number of Cells in each Cell Cycle Stage", col.names = c("Stage", "Count"), align = "c") %>% kable_styling()
-```
-
 ### Calculate Cell-Cycle with Seurat, the list of genes comes with Seurat (only for human)
 [Dissecting the multicellular ecosystem of metastatic melanoma by single-cell RNA-seq](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4944528/)
 
 First need to convert to mouse symbols, we'll use Biomart for that too.
 ```{r}
-table(Idents(experiment.aggregate))
+# Mouse Code
+# convertHumanGeneList <- function(x){
+#   require("biomaRt")
+#   human = useEnsembl("ensembl", dataset = "hsapiens_gene_ensembl", mirror = "uswest")
+#   mouse = useEnsembl("ensembl", dataset = "mmusculus_gene_ensembl", mirror = "uswest")
+# 
+#   genes = getLDS(attributes = c("hgnc_symbol"), filters = "hgnc_symbol", values = x , mart = human, attributesL = c("mgi_symbol"), martL = mouse, uniqueRows=T)
+# 
+#   humanx <- unique(genes[, 2])
+# 
+#   # Print the first 6 genes found to the screen
+#   print(head(humanx))
+#   return(humanx)
+# }
+# 
+# m.s.genes <- convertHumanGeneList(cc.genes.updated.2019$s.genes)
+# m.g2m.genes <- convertHumanGeneList(cc.genes.updated.2019$g2m.genes)
+# 
+# # Create our Seurat object and complete the initialization steps
+# experiment.aggregate <- CellCycleScoring(experiment.aggregate, s.features = m.s.genes, g2m.features = m.g2m.genes, set.ident = TRUE)
 
-convertHumanGeneList <- function(x){
-  require("biomaRt")
-  human = useEnsembl("ensembl", dataset = "hsapiens_gene_ensembl", mirror = "uswest")
-  mouse = useEnsembl("ensembl", dataset = "mmusculus_gene_ensembl", mirror = "uswest")
-
-  genes = getLDS(attributes = c("hgnc_symbol"), filters = "hgnc_symbol", values = x , mart = human, attributesL = c("mgi_symbol"), martL = mouse, uniqueRows=T)
-
-  humanx <- unique(genes[, 2])
-
-  # Print the first 6 genes found to the screen
-  print(head(humanx))
-  return(humanx)
-}
-
-m.s.genes <- convertHumanGeneList(cc.genes.updated.2019$s.genes)
-m.g2m.genes <- convertHumanGeneList(cc.genes.updated.2019$g2m.genes)
+s.genes <- (cc.genes$s.genes)
+g2m.genes <- (cc.genes$g2m.genes)
 
 # Create our Seurat object and complete the initialization steps
-experiment.aggregate <- CellCycleScoring(experiment.aggregate, s.features = m.s.genes, g2m.features = m.g2m.genes, set.ident = TRUE)
+experiment.aggregate <- CellCycleScoring(experiment.aggregate, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
 ```
 
 #### Table of cell cycle (seurate)
 
 ```{r}
 table(experiment.aggregate@meta.data$Phase) %>% kable(caption = "Number of Cells in each Cell Cycle Stage", col.names = c("Stage", "Count"), align = "c") %>% kable_styling()
-```
-
-#### Comparing the 2
-
-```{r}
-table(scran=experiment.aggregate$cell.cycle, seurat=experiment.aggregate$Phase)  %>% kable(caption = "Comparing scran to seurat cell cycle calls", align = "c") %>% kable_styling()
 ```
 
 #### Fixing the defualt "Ident" in Seurat

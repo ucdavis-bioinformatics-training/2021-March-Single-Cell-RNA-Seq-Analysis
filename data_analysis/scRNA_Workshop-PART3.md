@@ -1,6 +1,6 @@
 ---
-title: "Single Cell RNAseq Part 3"
-author: "Bioinformatics Core"
+title: "Introduction to Single Cell RNAseq Part 3"
+author: "UCD Bioinformatics Core"
 output:
     html_document:
       keep_md: TRUE
@@ -19,9 +19,9 @@ experiment.aggregate
 ```
 
 ```
-## An object of class Seurat
-## 12811 features across 2681 samples within 1 assay
-## Active assay: RNA (12811 features, 2000 variable features)
+## An object of class Seurat 
+## 36601 features across 4000 samples within 1 assay 
+## Active assay: RNA (36601 features, 2000 variable features)
 ```
 
 ```r
@@ -31,6 +31,7 @@ rand.genes <- sample(1:nrow(experiment.test), 500,replace = F)
 mat <- as.matrix(GetAssayData(experiment.test, slot="data"))
 mat[rand.genes,experiment.test$batchid=="Batch2"] <- mat[rand.genes,experiment.test$batchid=="Batch2"] + 0.22
 experiment.test = SetAssayData(experiment.test, slot="data", new.data= mat )
+rm(mat)
 ```
 
 ## Exploring Batch effects, none, Seurat [vars.to.regress]
@@ -57,41 +58,41 @@ experiment.test.noc <- RunPCA(object = experiment.test.noc)
 ```
 
 ```
-## PC_ 1
-## Positive:  Txn1, Sncg, Fez1, S100a10, Atp6v0b, Lxn, Dctn3, Tppp3, Sh3bgrl3, Rabac1
-## 	   Cisd1, Ppia, Fxyd2, Stmn3, Atp6v1f, Ndufa11, Atp5g1, Bex2, Atpif1, Uchl1
-## 	   Ndufa4, Psmb6, Ubb, Hagh, Anxa2, Gabarapl2, Rgs10, Nme1, Prdx2, Psmb3
-## Negative:  Mt1, Malat1, Adcyap1, Ptn, Apoe, Zeb2, Mt2, Timp3, Fabp7, Gpm6b
-## 	   Gal, Kit, Qk, Plp1, Atp2b4, Ifitm3, 6330403K07Rik, Sparc, Id3, Gap43
-## 	   Selenop, Gpx3, Zfp36l1, Rgcc, Scg2, Cbfb, Zfp36, Igfbp7, Marcksl1, Phlda1
-## PC_ 2
-## Positive:  Nefh, Cntn1, Thy1, S100b, Sv2b, Cplx1, Slc17a7, Vamp1, Nefm, Lynx1
-## 	   Endod1, Scn1a, Atp1b1, Vsnl1, Nat8l, Ntrk3, Sh3gl2, Fam19a2, Eno2, Scn1b
-## 	   Spock1, Scn8a, Glrb, Syt2, Lrrn1, Scn4b, Lgi3, Snap25, Atp2b2, Cpne6
-## Negative:  Malat1, Cd24a, Tmem233, Cd9, Dusp26, Mal2, Carhsp1, Tmem158, Fxyd2, Ctxn3
-## 	   Prkca, Ubb, Crip2, Arpc1b, S100a6, Gna14, Cd44, Tmem45b, Klf5, Tceal9
-## 	   Cd82, Hs6st2, Bex3, Emp3, Ift122, Fam89a, Pfn1, Acpp, Dynll1, Smim5
-## PC_ 3
-## Positive:  P2ry1, Fam19a4, Gm7271, Rarres1, Th, Zfp521, Wfdc2, Tox3, Gfra2, D130079A08Rik
-## 	   Iqsec2, Pou4f2, Rgs5, Kcnd3, Id4, Rasgrp1, Slc17a8, Casz1, Cdkn1a, Piezo2
-## 	   Dpp10, Gm11549, Fxyd6, Spink2, Rgs10, Zfhx3, C1ql4, Cd34, Gabra1, Cckar
-## Negative:  Calca, Basp1, Gap43, Ppp3ca, Map1b, Scg2, Cystm1, Tmem233, Calm1, Ift122
-## 	   Map7d2, Tubb3, Ncdn, Resp18, Prkca, Etv1, Nmb, Skp1a, Crip2, Camk2a
-## 	   Epb41l3, Tspan8, Ntrk1, Deptor, Gna14, Adk, Jak1, Tmem255a, Etl4, Camk2g
-## PC_ 4
-## Positive:  Id3, Timp3, Selenop, Pvalb, Ifitm3, Sparc, Igfbp7, Adk, Sgk1, Tm4sf1
-## 	   Ly6c1, Id1, Etv1, Nsg1, Slc17a7, Mt2, Zfp36l1, Cldn5, Spp1, Ier2
-## 	   Aldoc, Shox2, Cxcl12, Ptn, Qk, Itm2a, Stxbp6, Sparcl1, Jak1, Slit2
-## Negative:  Gap43, Calca, Stmn1, Tac1, Ppp3ca, 6330403K07Rik, Arhgdig, Alcam, Adcyap1, Prune2
-## 	   Kit, Ngfr, Ywhag, Gal, Fxyd6, Atp1a1, Smpd3, Ntrk1, Tmem100, Cd24a
-## 	   Atp2b4, Mt3, Cnih2, Tppp3, Gpx3, S100a11, Scn7a, Snap25, Cbfb, Gnb1
-## PC_ 5
-## Positive:  Cpne3, Klf5, Acpp, Fxyd2, Jak1, Rgs4, Osmr, Nppb, Zfhx3, Nbl1
-## 	   Etv1, Htr1f, Gm525, Sst, Adk, Tspan8, Parm1, Tmem233, Cysltr2, Prkca
-## 	   Cd24a, Prune2, Npy2r, Nts, Dgkz, Socs2, Gnb1, Phf24, Plxnc1, Il31ra
-## Negative:  Mt1, Ptn, B2m, Prdx1, Dbi, Mt3, Ifitm3, Mt2, Fxyd7, Id3
-## 	   Calca, S100a16, Sparc, Pcp4l1, Ifitm2, Selenop, Hspb1, Igfbp7, Rgcc, Selenom
-## 	   Abcg2, S100a13, Itm2a, Apoe, Tm4sf1, Timp3, Cebpd, Ubb, Ly6c1, Phlda1
+## PC_ 1 
+## Positive:  IFI30, SERPINA1, FCN1, SPI1, AIF1, CST3, APOBEC3A, IFITM3, LST1, CFD 
+## 	   MAFB, TYMP, LYZ, GRN, LILRB2, IFI27, S100A11, SLC11A1, S100A9, FTL 
+## 	   MS4A6A, CFP, TYROBP, PYCARD, FPR1, MNDA, S100A8, CEBPD, LILRA5, NCF2 
+## Negative:  CD69, IL32, CXCR4, IL7R, LTB, JUN, CD247, CD7, CTSW, GZMM 
+## 	   GZMA, BX539320.1, TRH, PIM2, IGKV3OR2-268, TCF7, AC005962.2, BTNL9, GNLY, CD5 
+## 	   CCL5, HSPA5, CST7, LEF1, CCR7, AL031590.1, MAL, TNFAIP3, PRKCQ-AS1, PRF1 
+## PC_ 2 
+## Positive:  GP9, TUBB1, TMEM40, CAVIN2, GNG11, PPBP, MPIG6B, CMTM5, PF4, ESAM 
+## 	   SPARC, TSC22D1, GP1BB, RGS18, HIST1H2AC, NRGN, PTGS1, HIST1H3H, TRIM58, ACRBP 
+## 	   AP003068.2, TREML1, HIST1H2BJ, C2orf88, TPM1, CLEC1B, TUBA8, F13A1, MPP1, LY6G6F 
+## Negative:  DUSP1, JUNB, NFKBIA, ZFP36, FOS, TNFAIP3, BX539320.1, KLF6, IER2, JUN 
+## 	   CXCR4, HSP90AA1, TRH, AC005962.2, HSPA5, IGKV3OR2-268, BTNL9, VIM, GADD45B, CD69 
+## 	   NR4A2, DDIT4, ISG15, CALR, FOSB, CCR5, IFITM2, PPIB, CRIP1, S100A6 
+## PC_ 3 
+## Positive:  PRF1, GZMB, CST7, NKG7, GNLY, FGFBP2, SPON2, CTSW, GZMA, KLRD1 
+## 	   ADGRG1, FCGR3A, KLRF1, GZMH, CCL5, CCL4, S1PR5, GZMM, MYOM2, IL2RB 
+## 	   CD247, PRSS23, HOPX, SRGN, KLRK1, IGFBP7, CLIC3, TTC38, SH2D1B, FCRL6 
+## Negative:  LTB, CD79A, MS4A1, LINC00926, IGHM, NIBAN3, AFF3, CCR7, FCER2, RALGPS2 
+## 	   HLA-DQB1, TCL1A, CD19, IGHD, BACH2, HLA-DRA, FCRL1, VPREB3, FCRLA, TNFRSF13C 
+## 	   RUBCNL, BLK, MEF2C, COL19A1, CD22, HLA-DOB, BANK1, PAX5, ADAM28, IL7R 
+## PC_ 4 
+## Positive:  IL7R, SOCS3, TCF7, RGCC, MAL, FOSB, SLC2A3, TNFAIP3, FOS, LEF1 
+## 	   CD5, JUNB, VIM, BX539320.1, TOB1, PRKCQ-AS1, ICOS, AC005962.2, TRH, GPR183 
+## 	   PLK3, AQP3, TRAT1, PTGER4, CD28, NELL2, IGKV3OR2-268, AL031590.1, LTB, LMNA 
+## Negative:  CD79A, MS4A1, LINC00926, HLA-DQA1, NIBAN3, HLA-DQB1, IGHM, CD74, FCER2, HLA-DRA 
+## 	   HLA-DRB1, AFF3, CD19, TCL1A, HLA-DPA1, IGHD, CD79B, FCRLA, FCRL1, RALGPS2 
+## 	   VPREB3, HLA-DPB1, ADAM28, BLK, MEF2C, HLA-DOB, PAX5, RUBCNL, CD22, BANK1 
+## PC_ 5 
+## Positive:  BX539320.1, TRH, BTNL9, CD83, AC005962.2, IGKV3OR2-268, FOSB, AL031590.1, FOS, DUSP1 
+## 	   IL1B, CD24, HIC1, BANK1, CCR5, STAG3, JUNB, MDK, JUN, CD79A 
+## 	   MS4A1, NR4A1, ZFP36, HLA-DQA1, CXCR4, G0S2, NR4A2, NFKBIA, ID3, FCER2 
+## Negative:  HBB, HBA2, ALAS2, HBA1, S100A8, CEBPD, HBD, RPS4Y1, AHSP, HBM 
+## 	   S100A9, HIST1H1E, SLC25A37, SELENBP1, LYZ, CA1, HIST1H1D, IGKV4-1, DCAF12, VCAN 
+## 	   IL1R2, SLC4A1, PLBD1, NKG7, IGLV1-40, FKBP5, MEGF9, EPB42, CD163, CLU
 ```
 
 ```r
@@ -149,41 +150,41 @@ experiment.test.regress <- RunPCA(object =experiment.test.regress)
 ```
 
 ```
-## PC_ 1
-## Positive:  Txn1, Sncg, Fez1, S100a10, Atp6v0b, Lxn, Dctn3, Tppp3, Sh3bgrl3, Rabac1
-## 	   Cisd1, Ppia, Fxyd2, Atp6v1f, Stmn3, Ndufa11, Atp5g1, Bex2, Atpif1, Uchl1
-## 	   Ndufa4, Psmb6, Ubb, Hagh, Anxa2, Gabarapl2, Rgs10, Nme1, Prdx2, Psmb3
-## Negative:  Mt1, Malat1, Adcyap1, Ptn, Apoe, Zeb2, Mt2, Timp3, Fabp7, Gpm6b
-## 	   Gal, Kit, Qk, Atp2b4, Plp1, Ifitm3, 6330403K07Rik, Sparc, Id3, Gap43
-## 	   Gpx3, Selenop, Zfp36l1, Rgcc, Scg2, Cbfb, Zfp36, Igfbp7, Marcksl1, Phlda1
-## PC_ 2
-## Positive:  Nefh, Cntn1, Thy1, S100b, Sv2b, Cplx1, Slc17a7, Vamp1, Nefm, Lynx1
-## 	   Endod1, Atp1b1, Scn1a, Nat8l, Vsnl1, Ntrk3, Sh3gl2, Fam19a2, Eno2, Scn1b
-## 	   Spock1, Scn8a, Glrb, Syt2, Scn4b, Lrrn1, Atp2b2, Lgi3, Cpne6, Snap25
-## Negative:  Malat1, Cd24a, Tmem233, Cd9, Dusp26, Mal2, Tmem158, Carhsp1, Fxyd2, Ctxn3
-## 	   Ubb, Prkca, Arpc1b, Crip2, S100a6, Gna14, Cd44, Tmem45b, Klf5, Tceal9
-## 	   Bex3, Hs6st2, Cd82, Emp3, Pfn1, Ift122, Tubb2b, Fam89a, Dynll1, Gadd45g
-## PC_ 3
-## Positive:  P2ry1, Fam19a4, Gm7271, Rarres1, Th, Zfp521, Wfdc2, Tox3, Gfra2, D130079A08Rik
-## 	   Iqsec2, Pou4f2, Rgs5, Kcnd3, Id4, Rasgrp1, Slc17a8, Casz1, Cdkn1a, Piezo2
-## 	   Dpp10, Gm11549, Fxyd6, Rgs10, Spink2, Zfhx3, C1ql4, Cd34, Gabra1, Cckar
-## Negative:  Calca, Basp1, Gap43, Ppp3ca, Map1b, Scg2, Cystm1, Tmem233, Map7d2, Calm1
-## 	   Ift122, Tubb3, Ncdn, Resp18, Prkca, Etv1, Nmb, Skp1a, Crip2, Epb41l3
-## 	   Camk2a, Ntrk1, Tspan8, Deptor, Gna14, Adk, Jak1, Tmem255a, Etl4, Camk2g
-## PC_ 4
-## Positive:  Id3, Timp3, Selenop, Pvalb, Ifitm3, Sparc, Igfbp7, Adk, Tm4sf1, Ly6c1
-## 	   Sgk1, Id1, Etv1, Nsg1, Mt2, Cldn5, Zfp36l1, Ier2, Itm2a, Spp1
-## 	   Slc17a7, Aldoc, Ptn, Cxcl12, Shox2, Qk, Stxbp6, Sparcl1, Slit2, Jak1
-## Negative:  Gap43, Calca, Stmn1, Tac1, Ppp3ca, Arhgdig, 6330403K07Rik, Alcam, Prune2, Adcyap1
-## 	   Kit, Ngfr, Ywhag, Atp1a1, Fxyd6, Gal, Smpd3, Ntrk1, Tmem100, Cd24a
-## 	   Atp2b4, Mt3, Cnih2, Tppp3, Scn7a, Gpx3, S100a11, Snap25, Gnb1, Cbfb
-## PC_ 5
-## Positive:  Cpne3, Klf5, Jak1, Acpp, Fxyd2, Nppb, Osmr, Gm525, Htr1f, Sst
-## 	   Etv1, Nbl1, Rgs4, Zfhx3, Cysltr2, Adk, Tspan8, Npy2r, Nts, Parm1
-## 	   Tmem233, Prkca, Cd24a, Socs2, Prune2, Il31ra, Dgkz, Ptafr, Gnb1, Ptprk
-## Negative:  Mt1, Ptn, B2m, Dbi, Prdx1, Mt3, Fxyd7, Ifitm3, S100a16, Calca
-## 	   Id3, Mt2, Pcp4l1, Sparc, Selenop, Ifitm2, Rgcc, Igfbp7, Abcg2, Tm4sf1
-## 	   Apoe, Selenom, S100a13, Cryab, Hspb1, Timp3, Gap43, Ubb, Ly6c1, Phlda1
+## PC_ 1 
+## Positive:  IFI30, SERPINA1, FCN1, SPI1, AIF1, APOBEC3A, LST1, CST3, IFITM3, CFD 
+## 	   TYMP, MAFB, GRN, S100A11, LYZ, LILRB2, TYROBP, SLC11A1, CFP, PYCARD 
+## 	   MS4A6A, FPR1, S100A9, MNDA, IFI27, NCF2, FTL, LILRA5, CTSS, BRI3 
+## Negative:  IL32, CD69, IL7R, LTB, CCL5, CD7, CXCR4, CTSW, CD247, GZMM 
+## 	   TCF7, GZMA, GNLY, LEF1, GRAP2, PRKCQ-AS1, TUBB1, MPIG6B, CST7, JUN 
+## 	   PIM2, CCR7, HIST1H1D, CD5, ITM2A, GP9, MAL, IGKV4-1, PPBP, PRF1 
+## PC_ 2 
+## Positive:  GP9, TUBB1, TMEM40, ESAM, GNG11, CAVIN2, CMTM5, TSC22D1, RGS18, PF4 
+## 	   MPIG6B, PPBP, SPARC, GP1BB, HIST1H2AC, HIST1H3H, PTGS1, NRGN, ACRBP, TRIM58 
+## 	   AP003068.2, C2orf88, HIST1H2BJ, YWHAH, CLEC1B, MPP1, TUBA8, TREML1, LIMS1, LY6G6F 
+## Negative:  HSPA5, JUNB, CXCR4, CD69, HSP90AA1, IL32, TNFAIP3, CD7, PPIB, CALR 
+## 	   CD247, HSP90B1, GZMA, PRF1, VIM, ZFP36, NKG7, JUN, NFKBIA, GZMM 
+## 	   DUSP1, CTSW, KLF6, GNLY, CD74, GZMB, KLRD1, AHNAK, LTB, IL7R 
+## PC_ 3 
+## Positive:  PRF1, GZMB, NKG7, CST7, GNLY, FGFBP2, CTSW, SPON2, GZMA, KLRD1 
+## 	   ADGRG1, GZMH, KLRF1, FCGR3A, CCL5, S1PR5, GZMM, IL2RB, CCL4, HOPX 
+## 	   CD247, MYOM2, PRSS23, KLRK1, CLIC3, IGFBP7, FCRL6, TTC38, SH2D1B, MATK 
+## Negative:  LTB, CD79A, MS4A1, CCR7, LINC00926, IGHM, FCER2, NIBAN3, AFF3, BACH2 
+## 	   BANK1, RALGPS2, IL7R, TCL1A, CD19, HLA-DRA, VPREB3, HLA-DQB1, IGHD, FCRL1 
+## 	   FCRLA, MAL, TCF7, PIM2, LEF1, RUBCNL, BLK, TNFRSF13C, CD22, MEF2C 
+## PC_ 4 
+## Positive:  IL7R, TCF7, MAL, LEF1, SOCS3, VIM, CD5, PRKCQ-AS1, TNFAIP3, IL32 
+## 	   SLC2A3, TRAT1, NELL2, ICOS, AQP3, CD28, TOB1, TSHZ2, RGCC, AP3M2 
+## 	   CD27, GPR183, ANXA1, ADTRP, S100A6, S100A10, PTGER4, SIRPG, CISH, PASK 
+## Negative:  CD79A, MS4A1, HLA-DQA1, LINC00926, NIBAN3, IGHM, FCER2, HLA-DQB1, HLA-DRA, BANK1 
+## 	   AFF3, CD74, CD19, HLA-DRB1, FCRLA, VPREB3, TCL1A, IGHD, HLA-DPA1, CD79B 
+## 	   CD83, FCRL1, RALGPS2, HLA-DPB1, BLK, ADAM28, CD22, MEF2C, HLA-DOB, RUBCNL 
+## PC_ 5 
+## Positive:  C1QA, C1QB, GSTM1, CDKN1C, MS4A7, C1QC, LINC02432, MS4A4A, RNASET2, HLA-DRB5 
+## 	   SMIM25, HSPB1, FMNL2, CSF1R, RPS27L, CASP5, GPBAR1, ICAM2, METTL7B, KCNMA1 
+## 	   LTB, CALHM6, CNIH4, CHCHD10, DDIT4, H2AFZ, SIGLEC10, LRRC25, SCIMP, FPR2 
+## Negative:  S100A8, IL1B, CXCL8, VCAN, S100A9, S100A12, AC020916.1, CCL3, IER3, ATF3 
+## 	   CD14, CCL3L1, LYZ, CES1, ATP2B1-AS1, KDM6B, HES1, CSF3R, LUCAT1, SLC25A37 
+## 	   EREG, PHACTR1, FOSB, PTPRE, EMP1, AC020656.1, HBB, TREM1, DMXL2, NEAT1
 ```
 
 ```r
@@ -218,51 +219,60 @@ sessionInfo()
 ```
 
 ```
-## R version 4.0.0 (2020-04-24)
+## R version 4.0.3 (2020-10-10)
 ## Platform: x86_64-apple-darwin17.0 (64-bit)
-## Running under: macOS Catalina 10.15.4
-##
+## Running under: macOS Big Sur 10.16
+## 
 ## Matrix products: default
 ## BLAS:   /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRblas.dylib
 ## LAPACK: /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRlapack.dylib
-##
+## 
 ## locale:
 ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-##
+## 
 ## attached base packages:
-## [1] stats     graphics  grDevices datasets  utils     methods   base     
-##
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
 ## other attached packages:
-## [1] Seurat_3.1.5
-##
+## [1] SeuratObject_4.0.0 Seurat_4.0.1      
+## 
 ## loaded via a namespace (and not attached):
-##  [1] httr_1.4.1          tidyr_1.0.3         jsonlite_1.6.1     
-##  [4] viridisLite_0.3.0   splines_4.0.0       leiden_0.3.3       
-##  [7] assertthat_0.2.1    BiocManager_1.30.10 renv_0.10.0        
-## [10] yaml_2.2.1          ggrepel_0.8.2       globals_0.12.5     
-## [13] pillar_1.4.4        lattice_0.20-41     glue_1.4.1         
-## [16] reticulate_1.15     digest_0.6.25       RColorBrewer_1.1-2
-## [19] colorspace_1.4-1    cowplot_1.0.0       htmltools_0.4.0    
-## [22] Matrix_1.2-18       plyr_1.8.6          pkgconfig_2.0.3    
-## [25] tsne_0.1-3          listenv_0.8.0       purrr_0.3.4        
-## [28] patchwork_1.0.0     scales_1.1.1        RANN_2.6.1         
-## [31] Rtsne_0.15          tibble_3.0.1        farver_2.0.3       
-## [34] ggplot2_3.3.0       ellipsis_0.3.1      ROCR_1.0-11        
-## [37] pbapply_1.4-2       lazyeval_0.2.2      survival_3.1-12    
-## [40] magrittr_1.5        crayon_1.3.4        evaluate_0.14      
-## [43] future_1.17.0       nlme_3.1-147        MASS_7.3-51.5      
-## [46] ica_1.0-2           tools_4.0.0         fitdistrplus_1.1-1
-## [49] data.table_1.12.8   lifecycle_0.2.0     stringr_1.4.0      
-## [52] plotly_4.9.2.1      munsell_0.5.0       cluster_2.1.0      
-## [55] irlba_2.3.3         compiler_4.0.0      rsvd_1.0.3         
-## [58] rlang_0.4.6         grid_4.0.0          ggridges_0.5.2     
-## [61] RcppAnnoy_0.0.16    htmlwidgets_1.5.1   igraph_1.2.5       
-## [64] labeling_0.3        rmarkdown_2.1       gtable_0.3.0       
-## [67] codetools_0.2-16    reshape2_1.4.4      R6_2.4.1           
-## [70] gridExtra_2.3       zoo_1.8-8           knitr_1.28         
-## [73] dplyr_0.8.5         uwot_0.1.8          future.apply_1.5.0
-## [76] KernSmooth_2.23-16  ape_5.3             stringi_1.4.6      
-## [79] parallel_4.0.0      Rcpp_1.0.4.6        vctrs_0.3.0        
-## [82] sctransform_0.2.1   png_0.1-7           tidyselect_1.1.0   
-## [85] xfun_0.13           lmtest_0.9-37
+##   [1] Rtsne_0.15            colorspace_2.0-0      deldir_0.2-10        
+##   [4] ellipsis_0.3.1        ggridges_0.5.3        spatstat.data_2.1-0  
+##   [7] leiden_0.3.7          listenv_0.8.0         farver_2.1.0         
+##  [10] ggrepel_0.9.1         fansi_0.4.2           codetools_0.2-18     
+##  [13] splines_4.0.3         knitr_1.31            polyclip_1.10-0      
+##  [16] jsonlite_1.7.2        ica_1.0-2             cluster_2.1.1        
+##  [19] png_0.1-7             uwot_0.1.10           shiny_1.6.0          
+##  [22] sctransform_0.3.2     spatstat.sparse_2.0-0 compiler_4.0.3       
+##  [25] httr_1.4.2            assertthat_0.2.1      Matrix_1.3-2         
+##  [28] fastmap_1.1.0         lazyeval_0.2.2        later_1.1.0.1        
+##  [31] htmltools_0.5.1.1     tools_4.0.3           igraph_1.2.6         
+##  [34] gtable_0.3.0          glue_1.4.2            RANN_2.6.1           
+##  [37] reshape2_1.4.4        dplyr_1.0.5           Rcpp_1.0.6           
+##  [40] scattermore_0.7       jquerylib_0.1.3       vctrs_0.3.6          
+##  [43] nlme_3.1-152          lmtest_0.9-38         xfun_0.22            
+##  [46] stringr_1.4.0         globals_0.14.0        mime_0.10            
+##  [49] miniUI_0.1.1.1        lifecycle_1.0.0       irlba_2.3.3          
+##  [52] goftest_1.2-2         future_1.21.0         MASS_7.3-53.1        
+##  [55] zoo_1.8-9             scales_1.1.1          spatstat.core_1.65-5 
+##  [58] promises_1.2.0.1      spatstat.utils_2.1-0  parallel_4.0.3       
+##  [61] RColorBrewer_1.1-2    yaml_2.2.1            reticulate_1.18      
+##  [64] pbapply_1.4-3         gridExtra_2.3         ggplot2_3.3.3        
+##  [67] sass_0.3.1            rpart_4.1-15          stringi_1.5.3        
+##  [70] highr_0.8             rlang_0.4.10          pkgconfig_2.0.3      
+##  [73] matrixStats_0.58.0    evaluate_0.14         lattice_0.20-41      
+##  [76] ROCR_1.0-11           purrr_0.3.4           tensor_1.5           
+##  [79] patchwork_1.1.1       htmlwidgets_1.5.3     labeling_0.4.2       
+##  [82] cowplot_1.1.1         tidyselect_1.1.0      parallelly_1.24.0    
+##  [85] RcppAnnoy_0.0.18      plyr_1.8.6            magrittr_2.0.1       
+##  [88] R6_2.5.0              generics_0.1.0        DBI_1.1.1            
+##  [91] pillar_1.5.1          mgcv_1.8-34           fitdistrplus_1.1-3   
+##  [94] survival_3.2-10       abind_1.4-5           tibble_3.1.0         
+##  [97] future.apply_1.7.0    crayon_1.4.1          KernSmooth_2.23-18   
+## [100] utf8_1.2.1            spatstat.geom_2.0-1   plotly_4.9.3         
+## [103] rmarkdown_2.7         grid_4.0.3            data.table_1.14.0    
+## [106] digest_0.6.27         xtable_1.8-4          tidyr_1.1.3          
+## [109] httpuv_1.5.5          munsell_0.5.0         viridisLite_0.3.0    
+## [112] bslib_0.2.4
 ```
