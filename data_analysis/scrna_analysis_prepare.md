@@ -119,9 +119,8 @@ system("unzip intro2singlecell_March2021.zip") # works in Linux and Mac, not sur
 
 If you timed out on the download, increase 1200 to something higher. If the system command didn't work to extract the zip file, navigate to the folder you downloaded the data in and manually unzip the archive file
 
-** The Dataset will only be available for download during this course **
+**The Dataset will only be available for download during this course**
 
-    )
 ### Edit the file YAML portion
 
 The top YAML (YAML ain't markup language) portion of the doc tells RStudio how to parse the document.
