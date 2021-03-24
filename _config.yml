@@ -15,8 +15,8 @@ navigation:
     url: base/2021_SingleCell_SampleTalk_DBurkart_March.pdf
   - title: What is Bioinformatics/Genomics?
     url: https://raw.githubusercontent.com/ucdavis-bioinformatics-training/ucdavis-bioinformatics-training.presentations/master/genomics/Genomics_a_perspective_Oct_2020.pdf
-#  - title: Experimental Design and Cost Estimation
-#    url: https://raw.githubusercontent.com/ucdavis-bioinformatics-training/ucdavis-bioinformatics-training.presentations/master/singlecell/scRNAseq-expDesign_May_2020.pdf
+  - title: Experimental Design and Cost Estimation
+    url: https://raw.githubusercontent.com/ucdavis-bioinformatics-training/ucdavis-bioinformatics-training.presentations/master/singlecell/scRNAseq-expDesign_May_2020.pdf
 
   - heading: Support
   - title: Zoom
@@ -51,20 +51,20 @@ navigation:
     url: data_analysis/scRNA_Workshop-PART2_fixed
   - title: scRNAseq Analysis - PART3
     url: data_analysis/scRNA_Workshop-PART3_fixed
-#  - title: scRNAseq Analysis - PART4
-#    url: data_analysis/scRNA_Workshop-PART4_fixed
-#  - title: scRNAseq Analysis - PART5
-#    url: data_analysis/scRNA_Workshop-PART5_fixed
-#  - title: scRNAseq Analysis - PART6
-#    url: data_analysis/scRNA_Workshop-PART6_fixed
+  - title: scRNAseq Analysis - PART4
+    url: data_analysis/scRNA_Workshop-PART4_fixed
+  - title: scRNAseq Analysis - PART5
+    url: data_analysis/scRNA_Workshop-PART5_fixed
+  - title: scRNAseq Analysis - PART6
+    url: data_analysis/scRNA_Workshop-PART6_fixed
 #  - title: Shiny App (extra)
 #    url: data_analysis/shiny_app_install
 #  - title: Shiny App on AWS (extra)
 #    url: data_analysis/shiny_on_aws
 
   - heading: ETC
-#  - title: Closing thoughts
-#    url: base/closing
+  - title: Closing thoughts
+    url: base/closing
   - title: Github page
     url: https://github.com/ucdavis-bioinformatics-training/2021-March-Single-Cell-RNA-Seq-Analysis
   - title: Biocore website
