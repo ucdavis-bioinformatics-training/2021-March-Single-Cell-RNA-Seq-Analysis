@@ -35,63 +35,7 @@ experiment.merged
 Idents(experiment.merged) <- "RNA_snn_res.0.25"
 ```
 
-
-
-#1. DE With Single Cell Data Using Limma
-For differential expression using models more complex than those allowed by FindMarkers() and FindAllMarkers(), data from Seurat may be used in limma (https://www.bioconductor.org/packages/devel/bioc/vignettes/limma/inst/doc/usersguide.pdf)
-
-We illustrate by comparing sample 1 to sample 2 within cluster 0:
-
-```r
-cluster0 <- subset(experiment.merged, idents = '0')
-expr <- as.matrix(GetAssayData(cluster0))
-
-# Filter out genes that are 0 for every cell in this cluster
-bad <- which(rowSums(expr) == 0)
-expr <- expr[-bad,]
-
-mm <- model.matrix(~0 + orig.ident, data = cluster0@meta.data)
-fit <- lmFit(expr, mm)  
-head(coef(fit)) # means in each sample for each gene
-```
-
-<div class='r_output'>            orig.identPBMC2 orig.identPBMC3 orig.identT021PBMC orig.identT022PBMC
- AL627309.5      0.00000000      0.09278631        0.005032979        0.014975512
- LINC01409       0.00000000      0.00000000        0.006526071        0.018558404
- LINC01128       0.08781332      0.00000000        0.052129308        0.095441205
- LINC00115       0.00000000      0.00000000        0.007809674        0.013766512
- NOC2L           0.07264820      0.16756185        0.307752834        0.227656257
- KLHL17          0.00000000      0.00000000        0.025409443        0.006485163
-</div>
-```r
-contr <- makeContrasts(orig.identPBMC2 - orig.identPBMC3, levels = colnames(coef(fit)))
-tmp <- contrasts.fit(fit, contrasts = contr)
-tmp <- eBayes(tmp)
-topTable(tmp, sort.by = "P", n = 20) # top 20 DE genes
-```
-
-<div class='r_output'>                logFC     AveExpr         t       P.Value     adj.P.Val         B
- RPS4Y1    -1.6532336 0.029174711 -38.37491 6.168119e-200 1.013607e-195 440.65923
- CEBPD     -1.1289309 0.037652250 -18.77288  9.638959e-68  7.919851e-64 142.62775
- SERPINA1  -1.1174456 0.042681254 -16.06871  5.999411e-52  3.286278e-48 106.87221
- LGALS2    -0.4961211 0.011020581 -15.82609  1.341377e-50  5.510713e-47 103.81744
- LILRA5    -0.5602333 0.014666118 -15.66319  1.063496e-49  3.495285e-46 101.78198
- TGFBI     -0.4262776 0.009827447 -15.39643  3.069136e-48  8.405851e-45  98.47652
- CLEC4E    -0.3079079 0.005433668 -15.22063  2.760467e-47  6.480394e-44  96.31723
- LILRB4    -0.3351893 0.008226769 -13.83378  5.236409e-40  1.075624e-36  79.84697
- GSTM1     -0.1853675 0.003271191 -13.73878  1.587677e-39  2.898921e-36  78.75711
- FCGR1A    -0.5509186 0.019832909 -13.70434  2.370812e-39  3.895956e-36  78.36316
- TFEC      -0.1805076 0.003185429 -13.65113  4.397924e-39  6.570099e-36  77.75607
- CD163     -0.4707119 0.011977161 -13.42900  5.700493e-38  7.806350e-35  75.23907
- UTY       -0.3960341 0.006988838 -13.19011  8.679830e-37  1.097197e-33  72.56418
- CD302     -0.3996428 0.011492329 -13.03015  5.273315e-36  6.189741e-33  70.79203
- IFI27     -1.9442354 0.139050432 -12.93048  1.610449e-35  1.764301e-32  69.69554
- RBP7      -0.3308949 0.005839322 -12.62239  4.885460e-34  5.017672e-31  66.34458
- SLC7A7    -0.3248241 0.008875956 -12.49177  2.039404e-33  1.971384e-30  64.94151
- LINC01637 -0.2645501 0.004668531 -12.16772  6.742679e-32  6.155692e-29  61.50714
- IGSF6     -0.4268268 0.014385703 -11.86693  1.632486e-30  1.411928e-27  58.37941
- IL1R2     -0.1930660 0.003407048 -11.57706  3.327906e-29  2.619763e-26  55.42127
-</div>* logFC: log2 fold change (UCD_Supp_VitE/UCD_Adj_VitE)
+* logFC: log2 fold change (UCD_Supp_VitE/UCD_Adj_VitE)
 * AveExpr: Average expression, in log2 counts per million, across all cells included in analysis (i.e. those in cluster 0)
 * t: t-statistic, i.e. logFC divided by its standard error
 * P.Value: Raw p-value from test that logFC differs from 0

@@ -27,28 +27,6 @@ experiment.merged
 Idents(experiment.merged) <- "RNA_snn_res.0.25"
 ```
 
-
-
-#1. DE With Single Cell Data Using Limma
-For differential expression using models more complex than those allowed by FindMarkers() and FindAllMarkers(), data from Seurat may be used in limma (https://www.bioconductor.org/packages/devel/bioc/vignettes/limma/inst/doc/usersguide.pdf)
-
-We illustrate by comparing sample 1 to sample 2 within cluster 0:
-```{r limma, warning=FALSE,error=FALSE,message=FALSE}
-cluster0 <- subset(experiment.merged, idents = '0')
-expr <- as.matrix(GetAssayData(cluster0))
-
-# Filter out genes that are 0 for every cell in this cluster
-bad <- which(rowSums(expr) == 0)
-expr <- expr[-bad,]
-
-mm <- model.matrix(~0 + orig.ident, data = cluster0@meta.data)
-fit <- lmFit(expr, mm)  
-head(coef(fit)) # means in each sample for each gene
-contr <- makeContrasts(orig.identPBMC2 - orig.identPBMC3, levels = colnames(coef(fit)))
-tmp <- contrasts.fit(fit, contrasts = contr)
-tmp <- eBayes(tmp)
-topTable(tmp, sort.by = "P", n = 20) # top 20 DE genes
-```
 * logFC: log2 fold change (UCD_Supp_VitE/UCD_Adj_VitE)
 * AveExpr: Average expression, in log2 counts per million, across all cells included in analysis (i.e. those in cluster 0)
 * t: t-statistic, i.e. logFC divided by its standard error
