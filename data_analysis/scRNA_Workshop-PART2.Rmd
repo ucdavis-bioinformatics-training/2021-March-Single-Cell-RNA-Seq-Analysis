@@ -23,6 +23,7 @@ library(kableExtra)
 ```{r load, warning=FALSE,error=FALSE,message=FALSE}
 load(file="original_seurat_object.RData")
 experiment.aggregate
+set.seed(12345)
 ```
 
 ## Some basic QA/QC of the metadata, print tables of the 5% quantiles.

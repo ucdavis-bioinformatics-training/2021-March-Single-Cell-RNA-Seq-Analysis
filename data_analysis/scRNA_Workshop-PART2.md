@@ -33,6 +33,10 @@ experiment.aggregate
 ## Active assay: RNA (36601 features, 0 variable features)
 ```
 
+```r
+set.seed(12345)
+```
+
 ## Some basic QA/QC of the metadata, print tables of the 5% quantiles.
 
 Show 5% quantiles for number of genes per cell per sample
