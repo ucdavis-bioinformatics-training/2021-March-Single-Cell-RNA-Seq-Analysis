@@ -25,6 +25,7 @@ library(kableExtra)
 ```r
 load(file="original_seurat_object.RData")
 experiment.aggregate
+set.seed(12345)
 ```
 
 ```
