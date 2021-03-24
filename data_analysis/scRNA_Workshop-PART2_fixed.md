@@ -6,11 +6,16 @@ output:
       keep_md: TRUE
 ---
 
+Last Updated: March 23 2021, 5pm
+
+# Part 2: Some QA/QC, filtering and normalization
+
 ## Load libraries
 
 ```r
 library(Seurat)
 library(biomaRt)
+library(ggplot2)
 library(knitr)
 library(kableExtra)
 ```
@@ -537,30 +542,6 @@ kable(round(do.call("cbind", tapply(experiment.aggregate$percent.mito, Idents(ex
 </tbody>
 </table>
 
-plot ridgeplots of the same data
-
-
-```r
-RidgePlot(experiment.aggregate, features=c("nFeature_RNA","nCount_RNA", "percent.mito"), ncol = 2)
-```
-
-<div class='r_output'> Picking joint bandwidth of 84.3
-</div>
-<div class='r_output'> Picking joint bandwidth of 289
-</div>
-<div class='r_output'> Picking joint bandwidth of 0.311
-</div>
-![](scRNA_Workshop-PART2_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
-
-
-Plot the number of cells each gene is represented by
-
-```r
-plot(sort(Matrix::rowSums(GetAssayData(experiment.aggregate) >= 3)) , xlab="gene rank", ylab="number of cells", main="Cells per genes (reads/gene >= 3 )")
-```
-
-![](scRNA_Workshop-PART2_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
-
 Violin plot of 1) number of genes, 2) number of UMI and 3) percent mitochondrial genes
 
 ```r
@@ -570,39 +551,84 @@ VlnPlot(
   ncol = 1, pt.size = 0.3)
 ```
 
-![](scRNA_Workshop-PART2_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+![](scRNA_Workshop-PART2_files/figure-html/violins-1.png)<!-- -->
 
-Gene Plot, scatter plot of gene expression across cells, (colored by sample)
+plot ridgeplots of the same data
+
 
 ```r
-FeatureScatter(experiment.aggregate, feature1 = "nCount_RNA", feature2 = "percent.mito")
+RidgePlot(experiment.aggregate, features=c("nFeature_RNA","nCount_RNA", "percent.mito"), ncol = 2)
 ```
 
-![](scRNA_Workshop-PART2_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+![](scRNA_Workshop-PART2_files/figure-html/ridgeplot_pre-1.png)<!-- -->
+
+Plot the distribution of number of cells each gene is represented by
+
+```r
+plot(sort(Matrix::rowSums(GetAssayData(experiment.aggregate) >= 3)) , xlab="gene rank", ylab="number of cells", main="Cells per genes (reads/gene >= 3 )")
+```
+
+![](scRNA_Workshop-PART2_files/figure-html/gene_range-1.png)<!-- -->
+
+
+Gene Plot, scatter plot of gene expression across cells, (colored by sample), drawing horizontal an verticale lines at proposed filtering cutoffs.
+
+
+
+```r
+FeatureScatter(experiment.aggregate, feature1 = "nCount_RNA", feature2 = "percent.mito") + geom_vline(xintercept = c(1000,12000)) + geom_hline(yintercept = 8)
+```
+
+![](scRNA_Workshop-PART2_files/figure-html/relationships-1.png)<!-- -->
+
+```r
+FeatureScatter(experiment.aggregate, feature1 = "nFeature_RNA", feature2 = "percent.mito") + geom_vline(xintercept = 700) + geom_hline(yintercept = 8)
+```
+
+![](scRNA_Workshop-PART2_files/figure-html/relationships-2.png)<!-- -->
 
 ```r
 FeatureScatter(
   experiment.aggregate, "nCount_RNA", "nFeature_RNA",
-  pt.size = 0.5)
+  pt.size = 0.5)  + geom_vline(xintercept = c(1000,12000)) + geom_hline(yintercept = 700)
 ```
 
-![](scRNA_Workshop-PART2_files/figure-html/unnamed-chunk-9-2.png)<!-- -->
+![](scRNA_Workshop-PART2_files/figure-html/relationships-3.png)<!-- -->
 
 ### Cell filtering
-We use the information above to filter out cells. Here we choose those that have percent mitochondrial genes max of 10% and unique UMI counts under 20,000 or greater than 500.
+
+We use the information above to filter out cells. Here we choose those that have percent mitochondrial genes max of 8%, unique UMI counts under 1,000 or greater than 12,000 and contain at least 700 features within them.
 
 
 ```r
-experiment.aggregate <- subset(experiment.aggregate, percent.mito <= 10)
+table(experiment.aggregate$orig.ident)
+```
 
-experiment.aggregate <- subset(experiment.aggregate, nCount_RNA >= 500 & nCount_RNA <= 20000)
+<div class='r_output'> 
+    PBMC2    PBMC3 T021PBMC T022PBMC 
+     8994     7304     8310     5088
+</div>
+```r
+experiment.aggregate <- subset(experiment.aggregate, percent.mito <= 8)
+
+experiment.aggregate <- subset(experiment.aggregate, nCount_RNA >= 1000 & nCount_RNA <= 12000)
+
+experiment.aggregate <- subset(experiment.aggregate, nFeature_RNA >= 700)
 
 experiment.aggregate
 ```
 
 <div class='r_output'> An object of class Seurat 
- 36601 features across 25590 samples within 1 assay 
+ 36601 features across 19874 samples within 1 assay 
  Active assay: RNA (36601 features, 0 variable features)
+</div>
+```r
+table(experiment.aggregate$orig.ident)
+```
+
+<div class='r_output'> 
+    PBMC2    PBMC3 T021PBMC T022PBMC 
+     3096     5293     7017     4468
 </div>
 Lets se the ridgeplots now after filtering
 
@@ -610,18 +636,20 @@ Lets se the ridgeplots now after filtering
 RidgePlot(experiment.aggregate, features=c("nFeature_RNA","nCount_RNA", "percent.mito"), ncol = 2)
 ```
 
-<div class='r_output'> Picking joint bandwidth of 80.2
-</div>
-<div class='r_output'> Picking joint bandwidth of 292
-</div>
-<div class='r_output'> Picking joint bandwidth of 0.246
-</div>
-![](scRNA_Workshop-PART2_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+![](scRNA_Workshop-PART2_files/figure-html/ridgeplot_post-1.png)<!-- -->
 ### You may also want to filter out additional genes.
 
 When creating the base Seurat object we did filter out some genes, recall _Keep all genes expressed in >= 10 cells_. After filtering cells and you may want to be more aggressive with the gene filter. Seurat doesn't supply such a function (that I can find), so below is a function that can do so, it filters genes requiring a min.value (log-normalized) in at least min.cells, here expression of 1 in at least 400 cells.
 
 
+```r
+experiment.aggregate
+```
+
+<div class='r_output'> An object of class Seurat 
+ 36601 features across 19874 samples within 1 assay 
+ Active assay: RNA (36601 features, 0 variable features)
+</div>
 ```r
 FilterGenes <-
  function (object, min.value=1, min.cells = 0, genes = NULL) {
@@ -639,23 +667,18 @@ FilterGenes <-
 }
 
 experiment.aggregate.genes <- FilterGenes(object = experiment.aggregate, min.value = 1, min.cells = 400)
-```
-
-<div class='r_output'> Warning: Adding a command log without an assay associated with it
-</div>
-```r
 experiment.aggregate.genes
 ```
 
 <div class='r_output'> An object of class Seurat 
- 3802 features across 25590 samples within 1 assay 
- Active assay: RNA (3802 features, 0 variable features)
+ 3390 features across 19874 samples within 1 assay 
+ Active assay: RNA (3390 features, 0 variable features)
 </div>
 ```r
 rm(experiment.aggregate.genes)
 ```
 
-## Lets reduce the dataset down to 1000 cells per sample for time
+## FOR THIS WORKSHOP ONLY: Lets reduce the dataset down to 1000 cells per sample for time
 
 ```r
 table(Idents(experiment.aggregate))
@@ -663,7 +686,7 @@ table(Idents(experiment.aggregate))
 
 <div class='r_output'> 
     PBMC2    PBMC3 T021PBMC T022PBMC 
-     6030     6789     7900     4871
+     3096     5293     7017     4468
 </div>
 ```r
 experiment.aggregate <- experiment.aggregate[,unlist(sapply(split(seq_along(Cells(experiment.aggregate)), experiment.aggregate$orig.ident), sample, size=1000, simplify = F))]
@@ -718,6 +741,7 @@ First need to convert to mouse symbols, we'll use Biomart for that too.
 # # Create our Seurat object and complete the initialization steps
 # experiment.aggregate <- CellCycleScoring(experiment.aggregate, s.features = m.s.genes, g2m.features = m.g2m.genes, set.ident = TRUE)
 
+# Human Code
 s.genes <- (cc.genes$s.genes)
 g2m.genes <- (cc.genes$g2m.genes)
 
@@ -725,12 +749,6 @@ g2m.genes <- (cc.genes$g2m.genes)
 experiment.aggregate <- CellCycleScoring(experiment.aggregate, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
 ```
 
-<div class='r_output'> Warning: The following features are not present in the object: MLF1IP, not
- searching for symbol synonyms
-</div>
-<div class='r_output'> Warning: The following features are not present in the object: FAM64A, HN1, not
- searching for symbol synonyms
-</div>
 #### Table of cell cycle (seurate)
 
 
@@ -749,15 +767,15 @@ table(experiment.aggregate@meta.data$Phase) %>% kable(caption = "Number of Cells
 <tbody>
   <tr>
    <td style="text-align:center;"> G1 </td>
-   <td style="text-align:center;"> 1586 </td>
+   <td style="text-align:center;"> 1676 </td>
   </tr>
   <tr>
    <td style="text-align:center;"> G2M </td>
-   <td style="text-align:center;"> 991 </td>
+   <td style="text-align:center;"> 898 </td>
   </tr>
   <tr>
    <td style="text-align:center;"> S </td>
-   <td style="text-align:center;"> 1423 </td>
+   <td style="text-align:center;"> 1426 </td>
   </tr>
 </tbody>
 </table>
@@ -770,8 +788,8 @@ table(Idents(experiment.aggregate))
 ```
 
 <div class='r_output'> 
-   G1  G2M    S 
- 1586  991 1423
+  G2M    S   G1 
+  898 1426 1676
 </div>
 ```r
 ## So lets change it back to samplename
@@ -791,7 +809,10 @@ The function FindVariableFeatures identifies the most highly variable genes (def
 
 ```r
 ?FindVariableFeatures
+```
 
+
+```r
 experiment.aggregate <- FindVariableFeatures(
   object = experiment.aggregate,
   selection.method = "vst")
@@ -807,8 +828,8 @@ top10 <- head(VariableFeatures(experiment.aggregate), 10)
 top10
 ```
 
-<div class='r_output'>  [1] "HBB"      "C1QB"     "HBA2"     "IGHV4-39" "C1QA"     "HBA1"    
-  [7] "IGKV3-11" "C1QC"     "HBD"      "PTGDS"
+<div class='r_output'>  [1] "HBB"     "C1QB"    "C1QA"    "HBA2"    "PTGDS"   "HBA1"    "CCL4"   
+  [8] "C1QC"    "PPBP"    "TRBV7-2"
 </div>
 ```r
 vfp1 <- VariableFeaturePlot(experiment.aggregate)
@@ -816,9 +837,7 @@ vfp1 <- LabelPoints(plot = vfp1, points = top10, repel = TRUE)
 vfp1
 ```
 
-<div class='r_output'> Warning: Transformation introduced infinite values in continuous x-axis
-</div>
-![](scRNA_Workshop-PART2_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
+![](scRNA_Workshop-PART2_files/figure-html/find_variable_genes-1.png)<!-- -->
 
 #### Question(s)
 
@@ -859,55 +878,55 @@ sessionInfo()
  [1] stats     graphics  grDevices utils     datasets  methods   base     
  
  other attached packages:
- [1] kableExtra_1.3.4   knitr_1.31         biomaRt_2.44.4     SeuratObject_4.0.0
- [5] Seurat_4.0.1      
+ [1] kableExtra_1.3.4   knitr_1.31         ggplot2_3.3.3      biomaRt_2.44.4    
+ [5] SeuratObject_4.0.0 Seurat_4.0.1      
  
  loaded via a namespace (and not attached):
    [1] systemfonts_1.0.1     BiocFileCache_1.12.1  plyr_1.8.6           
    [4] igraph_1.2.6          lazyeval_0.2.2        splines_4.0.3        
-   [7] listenv_0.8.0         scattermore_0.7       ggplot2_3.3.3        
-  [10] digest_0.6.27         htmltools_0.5.1.1     fansi_0.4.2          
-  [13] magrittr_2.0.1        memoise_2.0.0         tensor_1.5           
-  [16] cluster_2.1.1         ROCR_1.0-11           globals_0.14.0       
-  [19] matrixStats_0.58.0    svglite_2.0.0         askpass_1.1          
-  [22] spatstat.sparse_2.0-0 prettyunits_1.1.1     colorspace_2.0-0     
-  [25] blob_1.2.1            rvest_1.0.0           rappdirs_0.3.3       
-  [28] ggrepel_0.9.1         xfun_0.22             dplyr_1.0.5          
-  [31] crayon_1.4.1          jsonlite_1.7.2        spatstat.data_2.1-0  
-  [34] survival_3.2-10       zoo_1.8-9             glue_1.4.2           
-  [37] polyclip_1.10-0       gtable_0.3.0          webshot_0.5.2        
-  [40] leiden_0.3.7          future.apply_1.7.0    BiocGenerics_0.34.0  
-  [43] abind_1.4-5           scales_1.1.1          DBI_1.1.1            
-  [46] miniUI_0.1.1.1        Rcpp_1.0.6            viridisLite_0.3.0    
-  [49] xtable_1.8-4          progress_1.2.2        reticulate_1.18      
-  [52] spatstat.core_1.65-5  bit_4.0.4             stats4_4.0.3         
-  [55] htmlwidgets_1.5.3     httr_1.4.2            RColorBrewer_1.1-2   
-  [58] ellipsis_0.3.1        ica_1.0-2             farver_2.1.0         
-  [61] pkgconfig_2.0.3       XML_3.99-0.6          sass_0.3.1           
-  [64] uwot_0.1.10           dbplyr_2.1.0          deldir_0.2-10        
-  [67] utf8_1.2.1            labeling_0.4.2        tidyselect_1.1.0     
-  [70] rlang_0.4.10          reshape2_1.4.4        later_1.1.0.1        
-  [73] AnnotationDbi_1.50.3  munsell_0.5.0         tools_4.0.3          
-  [76] cachem_1.0.4          generics_0.1.0        RSQLite_2.2.4        
-  [79] ggridges_0.5.3        evaluate_0.14         stringr_1.4.0        
-  [82] fastmap_1.1.0         yaml_2.2.1            goftest_1.2-2        
-  [85] bit64_4.0.5           fitdistrplus_1.1-3    purrr_0.3.4          
-  [88] RANN_2.6.1            pbapply_1.4-3         future_1.21.0        
-  [91] nlme_3.1-152          mime_0.10             xml2_1.3.2           
-  [94] compiler_4.0.3        rstudioapi_0.13       plotly_4.9.3         
-  [97] curl_4.3              png_0.1-7             spatstat.utils_2.1-0 
- [100] tibble_3.1.0          bslib_0.2.4           stringi_1.5.3        
- [103] highr_0.8             lattice_0.20-41       Matrix_1.3-2         
- [106] vctrs_0.3.6           pillar_1.5.1          lifecycle_1.0.0      
- [109] spatstat.geom_2.0-1   lmtest_0.9-38         jquerylib_0.1.3      
- [112] RcppAnnoy_0.0.18      data.table_1.14.0     cowplot_1.1.1        
- [115] irlba_2.3.3           httpuv_1.5.5          patchwork_1.1.1      
- [118] R6_2.5.0              promises_1.2.0.1      KernSmooth_2.23-18   
- [121] gridExtra_2.3         IRanges_2.22.2        parallelly_1.24.0    
- [124] codetools_0.2-18      MASS_7.3-53.1         assertthat_0.2.1     
- [127] openssl_1.4.3         withr_2.4.1           sctransform_0.3.2    
- [130] S4Vectors_0.26.1      mgcv_1.8-34           parallel_4.0.3       
- [133] hms_1.0.0             grid_4.0.3            rpart_4.1-15         
- [136] tidyr_1.1.3           rmarkdown_2.7         Rtsne_0.15           
- [139] Biobase_2.48.0        shiny_1.6.0
+   [7] listenv_0.8.0         scattermore_0.7       digest_0.6.27        
+  [10] htmltools_0.5.1.1     fansi_0.4.2           magrittr_2.0.1       
+  [13] memoise_2.0.0         tensor_1.5            cluster_2.1.1        
+  [16] ROCR_1.0-11           globals_0.14.0        matrixStats_0.58.0   
+  [19] svglite_2.0.0         askpass_1.1           spatstat.sparse_2.0-0
+  [22] prettyunits_1.1.1     colorspace_2.0-0      rvest_1.0.0          
+  [25] blob_1.2.1            rappdirs_0.3.3        ggrepel_0.9.1        
+  [28] xfun_0.22             dplyr_1.0.5           crayon_1.4.1         
+  [31] jsonlite_1.7.2        spatstat.data_2.1-0   survival_3.2-10      
+  [34] zoo_1.8-9             glue_1.4.2            polyclip_1.10-0      
+  [37] gtable_0.3.0          webshot_0.5.2         leiden_0.3.7         
+  [40] future.apply_1.7.0    BiocGenerics_0.34.0   abind_1.4-5          
+  [43] scales_1.1.1          DBI_1.1.1             miniUI_0.1.1.1       
+  [46] Rcpp_1.0.6            viridisLite_0.3.0     xtable_1.8-4         
+  [49] progress_1.2.2        reticulate_1.18       spatstat.core_1.65-5 
+  [52] bit_4.0.4             stats4_4.0.3          htmlwidgets_1.5.3    
+  [55] httr_1.4.2            RColorBrewer_1.1-2    ellipsis_0.3.1       
+  [58] ica_1.0-2             farver_2.1.0          pkgconfig_2.0.3      
+  [61] XML_3.99-0.6          sass_0.3.1            uwot_0.1.10          
+  [64] dbplyr_2.1.0          deldir_0.2-10         utf8_1.2.1           
+  [67] labeling_0.4.2        tidyselect_1.1.0      rlang_0.4.10         
+  [70] reshape2_1.4.4        later_1.1.0.1         AnnotationDbi_1.50.3 
+  [73] munsell_0.5.0         tools_4.0.3           cachem_1.0.4         
+  [76] generics_0.1.0        RSQLite_2.2.4         ggridges_0.5.3       
+  [79] evaluate_0.14         stringr_1.4.0         fastmap_1.1.0        
+  [82] yaml_2.2.1            goftest_1.2-2         bit64_4.0.5          
+  [85] fitdistrplus_1.1-3    purrr_0.3.4           RANN_2.6.1           
+  [88] pbapply_1.4-3         future_1.21.0         nlme_3.1-152         
+  [91] mime_0.10             xml2_1.3.2            compiler_4.0.3       
+  [94] rstudioapi_0.13       plotly_4.9.3          curl_4.3             
+  [97] png_0.1-7             spatstat.utils_2.1-0  tibble_3.1.0         
+ [100] bslib_0.2.4           stringi_1.5.3         highr_0.8            
+ [103] lattice_0.20-41       Matrix_1.3-2          vctrs_0.3.6          
+ [106] pillar_1.5.1          lifecycle_1.0.0       spatstat.geom_2.0-1  
+ [109] lmtest_0.9-38         jquerylib_0.1.3       RcppAnnoy_0.0.18     
+ [112] data.table_1.14.0     cowplot_1.1.1         irlba_2.3.3          
+ [115] httpuv_1.5.5          patchwork_1.1.1       R6_2.5.0             
+ [118] promises_1.2.0.1      KernSmooth_2.23-18    gridExtra_2.3        
+ [121] IRanges_2.22.2        parallelly_1.24.0     codetools_0.2-18     
+ [124] MASS_7.3-53.1         assertthat_0.2.1      openssl_1.4.3        
+ [127] withr_2.4.1           sctransform_0.3.2     S4Vectors_0.26.1     
+ [130] mgcv_1.8-34           parallel_4.0.3        hms_1.0.0            
+ [133] grid_4.0.3            rpart_4.1-15          tidyr_1.1.3          
+ [136] rmarkdown_2.7         Rtsne_0.15            Biobase_2.48.0       
+ [139] shiny_1.6.0
 </div>

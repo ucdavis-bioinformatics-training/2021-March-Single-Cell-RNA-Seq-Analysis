@@ -5,13 +5,21 @@ output:
     html_document:
       keep_md: TRUE
 ---
+
+
+Last Updated: March 23 2021, 5pm
+
+# Part 3: Batch Correction Excercise
+
+
 ## Load libraries
 
 ```r
 library(Seurat)
 ```
 
-## Load the Seurat object
+## Load the Seurat object from the prior excercise, and **create a batch effect**
+
 
 ```r
 load(file="pre_sample_corrected.RData")
@@ -44,68 +52,28 @@ ScaleData - Scales and centers genes in the dataset.
 
 ```r
 ?ScaleData
-experiment.test.noc <- ScaleData(object = experiment.test)
 ```
 
-```
-## Centering and scaling data matrix
+
+
+```r
+experiment.test.noc <- ScaleData(object = experiment.test)
 ```
 
 ### Run PCA
 
 ```r
 experiment.test.noc <- RunPCA(object = experiment.test.noc)
-```
-
-```
-## PC_ 1 
-## Positive:  IFI30, SERPINA1, FCN1, SPI1, AIF1, CST3, APOBEC3A, IFITM3, LST1, CFD 
-## 	   MAFB, TYMP, LYZ, GRN, LILRB2, IFI27, S100A11, SLC11A1, S100A9, FTL 
-## 	   MS4A6A, CFP, TYROBP, PYCARD, FPR1, MNDA, S100A8, CEBPD, LILRA5, NCF2 
-## Negative:  CD69, IL32, CXCR4, IL7R, LTB, JUN, CD247, CD7, CTSW, GZMM 
-## 	   GZMA, BX539320.1, TRH, PIM2, IGKV3OR2-268, TCF7, AC005962.2, BTNL9, GNLY, CD5 
-## 	   CCL5, HSPA5, CST7, LEF1, CCR7, AL031590.1, MAL, TNFAIP3, PRKCQ-AS1, PRF1 
-## PC_ 2 
-## Positive:  GP9, TUBB1, TMEM40, CAVIN2, GNG11, PPBP, MPIG6B, CMTM5, PF4, ESAM 
-## 	   SPARC, TSC22D1, GP1BB, RGS18, HIST1H2AC, NRGN, PTGS1, HIST1H3H, TRIM58, ACRBP 
-## 	   AP003068.2, TREML1, HIST1H2BJ, C2orf88, TPM1, CLEC1B, TUBA8, F13A1, MPP1, LY6G6F 
-## Negative:  DUSP1, JUNB, NFKBIA, ZFP36, FOS, TNFAIP3, BX539320.1, KLF6, IER2, JUN 
-## 	   CXCR4, HSP90AA1, TRH, AC005962.2, HSPA5, IGKV3OR2-268, BTNL9, VIM, GADD45B, CD69 
-## 	   NR4A2, DDIT4, ISG15, CALR, FOSB, CCR5, IFITM2, PPIB, CRIP1, S100A6 
-## PC_ 3 
-## Positive:  PRF1, GZMB, CST7, NKG7, GNLY, FGFBP2, SPON2, CTSW, GZMA, KLRD1 
-## 	   ADGRG1, FCGR3A, KLRF1, GZMH, CCL5, CCL4, S1PR5, GZMM, MYOM2, IL2RB 
-## 	   CD247, PRSS23, HOPX, SRGN, KLRK1, IGFBP7, CLIC3, TTC38, SH2D1B, FCRL6 
-## Negative:  LTB, CD79A, MS4A1, LINC00926, IGHM, NIBAN3, AFF3, CCR7, FCER2, RALGPS2 
-## 	   HLA-DQB1, TCL1A, CD19, IGHD, BACH2, HLA-DRA, FCRL1, VPREB3, FCRLA, TNFRSF13C 
-## 	   RUBCNL, BLK, MEF2C, COL19A1, CD22, HLA-DOB, BANK1, PAX5, ADAM28, IL7R 
-## PC_ 4 
-## Positive:  IL7R, SOCS3, TCF7, RGCC, MAL, FOSB, SLC2A3, TNFAIP3, FOS, LEF1 
-## 	   CD5, JUNB, VIM, BX539320.1, TOB1, PRKCQ-AS1, ICOS, AC005962.2, TRH, GPR183 
-## 	   PLK3, AQP3, TRAT1, PTGER4, CD28, NELL2, IGKV3OR2-268, AL031590.1, LTB, LMNA 
-## Negative:  CD79A, MS4A1, LINC00926, HLA-DQA1, NIBAN3, HLA-DQB1, IGHM, CD74, FCER2, HLA-DRA 
-## 	   HLA-DRB1, AFF3, CD19, TCL1A, HLA-DPA1, IGHD, CD79B, FCRLA, FCRL1, RALGPS2 
-## 	   VPREB3, HLA-DPB1, ADAM28, BLK, MEF2C, HLA-DOB, PAX5, RUBCNL, CD22, BANK1 
-## PC_ 5 
-## Positive:  BX539320.1, TRH, BTNL9, CD83, AC005962.2, IGKV3OR2-268, FOSB, AL031590.1, FOS, DUSP1 
-## 	   IL1B, CD24, HIC1, BANK1, CCR5, STAG3, JUNB, MDK, JUN, CD79A 
-## 	   MS4A1, NR4A1, ZFP36, HLA-DQA1, CXCR4, G0S2, NR4A2, NFKBIA, ID3, FCER2 
-## Negative:  HBB, HBA2, ALAS2, HBA1, S100A8, CEBPD, HBD, RPS4Y1, AHSP, HBM 
-## 	   S100A9, HIST1H1E, SLC25A37, SELENBP1, LYZ, CA1, HIST1H1D, IGKV4-1, DCAF12, VCAN 
-## 	   IL1R2, SLC4A1, PLBD1, NKG7, IGLV1-40, FKBP5, MEGF9, EPB42, CD163, CLU
-```
-
-```r
 DimPlot(object = experiment.test.noc, group.by = "batchid", reduction = "pca")
 ```
 
-<img src="scRNA_Workshop-PART3_files/figure-html/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
+<img src="scRNA_Workshop-PART3_files/figure-html/pca_none-1.png" style="display: block; margin: auto;" />
 
 ```r
 DimPlot(object = experiment.test.noc, group.by = "batchid", dims = c(2,3), reduction = "pca")
 ```
 
-<img src="scRNA_Workshop-PART3_files/figure-html/unnamed-chunk-4-2.png" style="display: block; margin: auto;" />
+<img src="scRNA_Workshop-PART3_files/figure-html/pca_none-2.png" style="display: block; margin: auto;" />
 
 PCA Elbow plot to determine how many principal components to use in downstream analyses.  Components after the "elbow" in the plot generally explain little additional variability in the data.
 
@@ -114,7 +82,7 @@ PCA Elbow plot to determine how many principal components to use in downstream a
 ElbowPlot(experiment.test.noc)
 ```
 
-![](scRNA_Workshop-PART3_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+![](scRNA_Workshop-PART3_files/figure-html/pca_elbow-1.png)<!-- -->
 
 We use 10 components in downstream analyses. Using more components more closely approximates the full data set but increases run time.
 
@@ -126,7 +94,7 @@ experiment.test.noc <- RunTSNE(object = experiment.test.noc, dims = 1:pcs.use)
 DimPlot(object = experiment.test.noc,  group.by = "batchid")
 ```
 
-<img src="scRNA_Workshop-PART3_files/figure-html/unnamed-chunk-6-1.png" style="display: block; margin: auto;" />
+<img src="scRNA_Workshop-PART3_files/figure-html/tsne-1.png" style="display: block; margin: auto;" />
 
 ## Correct for sample to sample differences (seurat)
 
@@ -135,63 +103,13 @@ Use vars.to.regress to correct for the sample to sample differences and percent 
 ```r
 experiment.test.regress <- ScaleData(object = experiment.test,
                     vars.to.regress = c("batchid"), model.use = "linear")
-```
 
-```
-## Regressing out batchid
-```
-
-```
-## Centering and scaling data matrix
-```
-
-```r
 experiment.test.regress <- RunPCA(object =experiment.test.regress)
-```
 
-```
-## PC_ 1 
-## Positive:  IFI30, SERPINA1, FCN1, SPI1, AIF1, APOBEC3A, LST1, CST3, IFITM3, CFD 
-## 	   TYMP, MAFB, GRN, S100A11, LYZ, LILRB2, TYROBP, SLC11A1, CFP, PYCARD 
-## 	   MS4A6A, FPR1, S100A9, MNDA, IFI27, NCF2, FTL, LILRA5, CTSS, BRI3 
-## Negative:  IL32, CD69, IL7R, LTB, CCL5, CD7, CXCR4, CTSW, CD247, GZMM 
-## 	   TCF7, GZMA, GNLY, LEF1, GRAP2, PRKCQ-AS1, TUBB1, MPIG6B, CST7, JUN 
-## 	   PIM2, CCR7, HIST1H1D, CD5, ITM2A, GP9, MAL, IGKV4-1, PPBP, PRF1 
-## PC_ 2 
-## Positive:  GP9, TUBB1, TMEM40, ESAM, GNG11, CAVIN2, CMTM5, TSC22D1, RGS18, PF4 
-## 	   MPIG6B, PPBP, SPARC, GP1BB, HIST1H2AC, HIST1H3H, PTGS1, NRGN, ACRBP, TRIM58 
-## 	   AP003068.2, C2orf88, HIST1H2BJ, YWHAH, CLEC1B, MPP1, TUBA8, TREML1, LIMS1, LY6G6F 
-## Negative:  HSPA5, JUNB, CXCR4, CD69, HSP90AA1, IL32, TNFAIP3, CD7, PPIB, CALR 
-## 	   CD247, HSP90B1, GZMA, PRF1, VIM, ZFP36, NKG7, JUN, NFKBIA, GZMM 
-## 	   DUSP1, CTSW, KLF6, GNLY, CD74, GZMB, KLRD1, AHNAK, LTB, IL7R 
-## PC_ 3 
-## Positive:  PRF1, GZMB, NKG7, CST7, GNLY, FGFBP2, CTSW, SPON2, GZMA, KLRD1 
-## 	   ADGRG1, GZMH, KLRF1, FCGR3A, CCL5, S1PR5, GZMM, IL2RB, CCL4, HOPX 
-## 	   CD247, MYOM2, PRSS23, KLRK1, CLIC3, IGFBP7, FCRL6, TTC38, SH2D1B, MATK 
-## Negative:  LTB, CD79A, MS4A1, CCR7, LINC00926, IGHM, FCER2, NIBAN3, AFF3, BACH2 
-## 	   BANK1, RALGPS2, IL7R, TCL1A, CD19, HLA-DRA, VPREB3, HLA-DQB1, IGHD, FCRL1 
-## 	   FCRLA, MAL, TCF7, PIM2, LEF1, RUBCNL, BLK, TNFRSF13C, CD22, MEF2C 
-## PC_ 4 
-## Positive:  IL7R, TCF7, MAL, LEF1, SOCS3, VIM, CD5, PRKCQ-AS1, TNFAIP3, IL32 
-## 	   SLC2A3, TRAT1, NELL2, ICOS, AQP3, CD28, TOB1, TSHZ2, RGCC, AP3M2 
-## 	   CD27, GPR183, ANXA1, ADTRP, S100A6, S100A10, PTGER4, SIRPG, CISH, PASK 
-## Negative:  CD79A, MS4A1, HLA-DQA1, LINC00926, NIBAN3, IGHM, FCER2, HLA-DQB1, HLA-DRA, BANK1 
-## 	   AFF3, CD74, CD19, HLA-DRB1, FCRLA, VPREB3, TCL1A, IGHD, HLA-DPA1, CD79B 
-## 	   CD83, FCRL1, RALGPS2, HLA-DPB1, BLK, ADAM28, CD22, MEF2C, HLA-DOB, RUBCNL 
-## PC_ 5 
-## Positive:  C1QA, C1QB, GSTM1, CDKN1C, MS4A7, C1QC, LINC02432, MS4A4A, RNASET2, HLA-DRB5 
-## 	   SMIM25, HSPB1, FMNL2, CSF1R, RPS27L, CASP5, GPBAR1, ICAM2, METTL7B, KCNMA1 
-## 	   LTB, CALHM6, CNIH4, CHCHD10, DDIT4, H2AFZ, SIGLEC10, LRRC25, SCIMP, FPR2 
-## Negative:  S100A8, IL1B, CXCL8, VCAN, S100A9, S100A12, AC020916.1, CCL3, IER3, ATF3 
-## 	   CD14, CCL3L1, LYZ, CES1, ATP2B1-AS1, KDM6B, HES1, CSF3R, LUCAT1, SLC25A37 
-## 	   EREG, PHACTR1, FOSB, PTPRE, EMP1, AC020656.1, HBB, TREM1, DMXL2, NEAT1
-```
-
-```r
 DimPlot(object = experiment.test.regress, group.by = "batchid", reduction = "pca")
 ```
 
-<img src="scRNA_Workshop-PART3_files/figure-html/unnamed-chunk-7-1.png" style="display: block; margin: auto;" />
+<img src="scRNA_Workshop-PART3_files/figure-html/scaledata_regress-1.png" style="display: block; margin: auto;" />
 
 ### Corrected TSNE Plot
 
@@ -200,11 +118,15 @@ experiment.test.regress <- RunTSNE(object = experiment.test.regress, dims.use = 
 DimPlot(object = experiment.test.regress, group.by = "batchid", reduction = "tsne")
 ```
 
-<img src="scRNA_Workshop-PART3_files/figure-html/unnamed-chunk-8-1.png" style="display: block; margin: auto;" />
+<img src="scRNA_Workshop-PART3_files/figure-html/tsne_2-1.png" style="display: block; margin: auto;" />
 
 #### Question(s)
 
 1. Try a couple of PCA cutoffs (low and high) and compare the TSNE plots from the different methods.  Do they look meaningfully different?
+
+### Excercise
+
+Now go back to the original data without having been modified and see if a "batch effect" exists between the two actual batches
 
 ## Get the next Rmd file
 
