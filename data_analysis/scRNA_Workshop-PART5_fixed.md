@@ -27,7 +27,7 @@ experiment.aggregate
 
 <div class='r_output'> An object of class Seurat 
  36601 features across 4000 samples within 1 assay 
- Active assay: RNA (36601 features, 2000 variable features)
+ Active assay: RNA (36601 features, 3783 variable features)
   1 dimensional reduction calculated: pca
 </div>
 
@@ -92,26 +92,26 @@ head(experiment.aggregate[[]])
  CTGGTCTTCCAAATGC-PBMC2  0.032593746 -0.01541937     S     PBMC2
  AGCTTGAGTTGTGGAG-PBMC2 -0.051954726 -0.01295370    G1     PBMC2
                         RNA_snn_res.0.25 RNA_snn_res.0.75 RNA_snn_res.1.25
- CCGTTCAAGGTGACCA-PBMC2                3                3                5
- ATTGGTGTCGGTTCGG-PBMC2                3                3                5
- GTAGGCCTCTATCCTA-PBMC2                2               10                9
- CATTATCCAGGCAGTA-PBMC2                3                3                5
- CTGGTCTTCCAAATGC-PBMC2                2                6                6
- AGCTTGAGTTGTGGAG-PBMC2                9               12               13
+ CCGTTCAAGGTGACCA-PBMC2                2                9                9
+ ATTGGTGTCGGTTCGG-PBMC2                4                3                3
+ GTAGGCCTCTATCCTA-PBMC2                5                6                7
+ CATTATCCAGGCAGTA-PBMC2                2                9                9
+ CTGGTCTTCCAAATGC-PBMC2                6                5                6
+ AGCTTGAGTTGTGGAG-PBMC2                5                6                7
                         RNA_snn_res.1.75 RNA_snn_res.2.25 RNA_snn_res.2.75
- CCGTTCAAGGTGACCA-PBMC2                5                5                3
- ATTGGTGTCGGTTCGG-PBMC2                5                5                3
- GTAGGCCTCTATCCTA-PBMC2                9                8                8
- CATTATCCAGGCAGTA-PBMC2                5                5                3
- CTGGTCTTCCAAATGC-PBMC2                6                6                6
- AGCTTGAGTTGTGGAG-PBMC2               13               15               18
+ CCGTTCAAGGTGACCA-PBMC2               11               13               12
+ ATTGGTGTCGGTTCGG-PBMC2                3                2               20
+ GTAGGCCTCTATCCTA-PBMC2                7                8                8
+ CATTATCCAGGCAGTA-PBMC2               11               13               12
+ CTGGTCTTCCAAATGC-PBMC2                6                6                5
+ AGCTTGAGTTGTGGAG-PBMC2                7                8                8
                         RNA_snn_res.3.25 RNA_snn_res.3.75 seurat_clusters
- CCGTTCAAGGTGACCA-PBMC2                4                6               6
- ATTGGTGTCGGTTCGG-PBMC2                4                6               6
+ CCGTTCAAGGTGACCA-PBMC2               12               11              11
+ ATTGGTGTCGGTTCGG-PBMC2               23               25              25
  GTAGGCCTCTATCCTA-PBMC2                8                8               8
- CATTATCCAGGCAGTA-PBMC2                4                6               6
- CTGGTCTTCCAAATGC-PBMC2                6                5               5
- AGCTTGAGTTGTGGAG-PBMC2               18               18              18
+ CATTATCCAGGCAGTA-PBMC2               12               11              11
+ CTGGTCTTCCAAATGC-PBMC2                5                4               4
+ AGCTTGAGTTGTGGAG-PBMC2                8                8               8
 </div>
 
 Lets first investigate how many clusters each resolution produces and set it to the smallest resolutions of 0.5 (fewest clusters).
@@ -123,9 +123,9 @@ sapply(grep("res",colnames(experiment.aggregate@meta.data),value = TRUE),
 ```
 
 <div class='r_output'> RNA_snn_res.0.25 RNA_snn_res.0.75 RNA_snn_res.1.25 RNA_snn_res.1.75 
-               10               15               18               23 
+                9               15               16               19 
  RNA_snn_res.2.25 RNA_snn_res.2.75 RNA_snn_res.3.25 RNA_snn_res.3.75 
-               25               27               27               30
+               21               24               26               29
 </div>
 ### Plot TSNE coloring for each resolution
 
@@ -136,7 +136,7 @@ tSNE dimensionality reduction plots are then used to visualize clustering result
 experiment.aggregate <- RunTSNE(
   object = experiment.aggregate,
   reduction.use = "pca",
-  dims.use = use.pcs,
+  dims = use.pcs,
   do.fast = TRUE)
 ```
 
@@ -164,22 +164,28 @@ Once complete go back to 1:50
 Lets set the default identity to a resolution of 0.25 and produce a table of cluster to sample assignments.
 
 ```r
-Idents(experiment.aggregate) <- "RNA_snn_res.0.25"
+Idents(experiment.aggregate) <- "RNA_snn_res.1.25"
 table(Idents(experiment.aggregate),experiment.aggregate$orig.ident)
 ```
 
-<div class='r_output'>    
-     PBMC2 PBMC3 T021PBMC T022PBMC
-   0    37    18      438      527
-   1    58   709       12        9
-   2   429    12        0        3
-   3   307    42       32       13
-   4     9     5      295       67
-   5     7     7       86      232
-   6    77    14       91       29
-   7    22   165        6       17
-   8     0     4       36      100
-   9    54    24        4        3
+<div class='r_output'>     
+      PBMC2 PBMC3 T021PBMC T022PBMC
+   0     19    19      341       90
+   1     43   403        3        7
+   2      9     0       15      431
+   3      7    15      284       49
+   4     15   315       10        5
+   5      7     2       76      219
+   6    247    13        2        0
+   7    203     2        0        6
+   8     12   179        2       13
+   9    150     6       30       18
+   10    73    10       92       29
+   11   171    12        1        0
+   12     0     0       37       99
+   13     6     0       87        5
+   14    33    24        2        3
+   15     5     0       18       26
 </div>
 Plot TSNE coloring by the slot 'ident' (default).
 
@@ -248,6 +254,7 @@ FeaturePlot(experiment.aggregate, features = c('percent.mito'), pt.size=0.5)
 
 
 ```r
+Idents(experiment.aggregate) <- "RNA_snn_res.0.25"
 experiment.aggregate <- BuildClusterTree(
   experiment.aggregate, dims = use.pcs)
 
@@ -284,8 +291,8 @@ table(Idents(experiment.merged))
 ```
 
 <div class='r_output'> 
-    7    5    0    1    2    6    8    9 
-  604  708 1020  788  444  211  140   85
+    7    5    0    1    2    6    8 
+  595  627 1024  803  552  265  134
 </div>
 ```r
 DimPlot(object = experiment.merged, pt.size=0.5, label = T, reduction = "umap")
@@ -309,25 +316,25 @@ experiment.examples <- experiment.merged
 levels(experiment.examples@active.ident)
 ```
 
-<div class='r_output'> [1] "7" "5" "0" "1" "2" "6" "8" "9"
+<div class='r_output'> [1] "7" "5" "0" "1" "2" "6" "8"
 </div>
 ```r
 experiment.examples@active.ident <- relevel(experiment.examples@active.ident, "6")
 levels(experiment.examples@active.ident)
 ```
 
-<div class='r_output'> [1] "6" "7" "5" "0" "1" "2" "8" "9"
+<div class='r_output'> [1] "6" "7" "5" "0" "1" "2" "8"
 </div>
 ```r
 # now cluster 6 is the "first" factor
 
-DimPlot(object = experiment.merged, pt.size=0.5, label = T, reduction = "umap")
+DimPlot(object = experiment.examples, pt.size=0.5, label = T, reduction = "umap")
 ```
 
 ![](scRNA_Workshop-PART5_files/figure-html/merging_cluster2-1.png)<!-- -->
 
 ```r
-VlnPlot(object = experiment.merged, features = "percent.mito", pt.size = 0.05)
+VlnPlot(object = experiment.examples, features = "percent.mito", pt.size = 0.05)
 ```
 
 ![](scRNA_Workshop-PART5_files/figure-html/merging_cluster2-2.png)<!-- -->
@@ -340,7 +347,7 @@ Idents(experiment.examples) <- factor(experiment.examples@active.ident, levels=c
 levels(experiment.examples@active.ident)
 ```
 
-<div class='r_output'> [1] "6" "2" "0" "7" "5" "9" "1" "8"
+<div class='r_output'> [1] "6" "2" "0" "7" "5" "1" "8"
 </div>
 ```r
 DimPlot(object = experiment.examples, pt.size=0.5, label = T, reduction = "umap")
@@ -360,8 +367,8 @@ table(Idents(experiment.examples))
 ```
 
 <div class='r_output'> 
-   1   2   5   6   7   8   9 R12 R15 R18 R19  R2 R24  R3  R8  R9 
- 788 444 708 211 604 140  85 132 101   2  44 270  46 256   5 164
+   1   2   5   6   7   8  R0 R13 R15 R16 R19  R2 R24 R28  R7 
+ 803 552 627 265 595 134 337   1 111   4   4 297  41   3 226
 </div>
 
 ```r
@@ -405,12 +412,12 @@ dim(experiment.aggregate)
 dim(experiment.aggregate.tmp)
 ```
 
-<div class='r_output'> [1] 36601  3789
+<div class='r_output'> [1] 36601  3735
 </div>
 
 
 ```r
-DimPlot(object = experiment.aggregate.tmp, group.by="orig.ident", pt.size=0.5, reduction = "umap", label = T)
+DimPlot(object = experiment.aggregate.tmp, pt.size=0.5, reduction = "umap", label = T)
 ```
 
 ![](scRNA_Workshop-PART5_files/figure-html/removing_cells_plot-1.png)<!-- -->
@@ -432,24 +439,24 @@ Seurat can help you find markers that define clusters via differential expressio
 
 
 ```r
-markers = FindMarkers(experiment.merged, ident.1=c(6))
+markers = FindMarkers(experiment.aggregate, ident.1=c(3,7), ident.2 = c(4,5))
 
 head(markers)
 ```
 
-<div class='r_output'>       p_val avg_log2FC pct.1 pct.2 p_val_adj
- FCRL1     0   2.042489 0.498 0.004         0
- FCRLA     0   1.476939 0.389 0.001         0
- AFF3      0   2.329102 0.682 0.018         0
- BANK1     0   2.416954 0.711 0.009         0
- PAX5      0   1.492776 0.455 0.003         0
- MS4A1     0   3.771599 0.910 0.014         0
+<div class='r_output'>               p_val avg_log2FC pct.1 pct.2     p_val_adj
+ RPL13 6.509849e-128   1.266628 0.993 0.941 2.382670e-123
+ RPS5  5.564534e-107   1.375955 0.966 0.740 2.036675e-102
+ RPS19 8.747659e-104   1.214465 0.985 0.860  3.201731e-99
+ RPS8  5.925264e-102   1.128725 0.993 0.901  2.168706e-97
+ RPL29  3.151857e-93   1.075348 0.982 0.829  1.153611e-88
+ RPS18  3.693614e-93   1.170980 0.985 0.871  1.351900e-88
 </div>
 ```r
 dim(markers)
 ```
 
-<div class='r_output'> [1] 2029    5
+<div class='r_output'> [1] 1509    5
 </div>
 ```r
 table(markers$avg_log2FC > 0)
@@ -457,15 +464,15 @@ table(markers$avg_log2FC > 0)
 
 <div class='r_output'> 
  FALSE  TRUE 
-  1360   669
+  1002   507
 </div>
 ```r
-table(markers$p_val_adj < 0.05)
+table(markers$p_val_adj < 0.05 & markers$avg_log2FC > 0)
 ```
 
 <div class='r_output'> 
  FALSE  TRUE 
-  1016  1013
+  1130   379
 </div>
 
 pct.1 and pct.2 are the proportion of cells with expression above 0 in ident.1 and ident.2 respectively. p_val is the raw p_value associated with the differntial expression test with adjusted value in p_val_adj. avg_logFC is the average log fold change difference between the two groups.
@@ -475,7 +482,7 @@ avg_diff (lines 130, 193 and) appears to be the difference in log(x = mean(x = e
 Can use a violin plot to visualize the expression pattern of some markers
 
 ```r
-VlnPlot(object = experiment.merged, features = rownames(markers)[1:2], pt.size = 0.05)
+VlnPlot(object = experiment.aggregate, features = rownames(markers)[1:2], pt.size = 0.05)
 ```
 
 ![](scRNA_Workshop-PART5_files/figure-html/vln-1.png)<!-- -->
@@ -484,8 +491,8 @@ Or a feature plot
 
 ```r
 FeaturePlot(
-    experiment.merged,
-    head(rownames(markers), n=2),
+    experiment.aggregate,
+    "KLRD1",
     cols = c("lightgrey", "blue"),
     ncol = 2
 )
@@ -506,27 +513,27 @@ markers_all <- FindAllMarkers(
 dim(markers_all)
 ```
 
-<div class='r_output'> [1] 4398    7
+<div class='r_output'> [1] 4031    7
 </div>
 ```r
 head(markers_all)
 ```
 
-<div class='r_output'>               p_val avg_log2FC pct.1 pct.2     p_val_adj cluster  gene
- CTSW  1.556588e-233   2.001720 0.957 0.344 5.697267e-229       7  CTSW
- GZMA  1.132526e-188   1.715444 0.896 0.302 4.145157e-184       7  GZMA
- PRF1  6.009217e-186   1.812446 0.829 0.235 2.199433e-181       7  PRF1
- NKG7  4.692792e-174   1.532782 0.978 0.401 1.717609e-169       7  NKG7
- KLRD1 8.593663e-166   1.565966 0.724 0.186 3.145367e-161       7 KLRD1
- CST7  2.633715e-154   1.379715 0.868 0.290 9.639660e-150       7  CST7
+<div class='r_output'>                   p_val avg_log2FC pct.1 pct.2     p_val_adj cluster      gene
+ MS4A1     7.868239e-202   2.460640 0.333 0.014 2.879854e-197       7     MS4A1
+ LINC00926 1.243988e-201   1.881382 0.292 0.005 4.553122e-197       7 LINC00926
+ CD79A     2.998365e-173   2.941748 0.336 0.024 1.097432e-168       7     CD79A
+ BANK1     2.474993e-155   1.334570 0.255 0.009 9.058720e-151       7     BANK1
+ IGHM      1.796692e-143   1.835100 0.289 0.021 6.576072e-139       7      IGHM
+ AFF3      6.026634e-129   1.291855 0.257 0.018 2.205808e-124       7      AFF3
 </div>
 ```r
 table(table(markers_all$gene))
 ```
 
 <div class='r_output'> 
-    1    2    3    4    5 
- 1441 1063  254   16    1
+    1    2    3    4 
+ 1371 1049  178    7
 </div>
 ```r
 markers_all_single <- markers_all[markers_all$gene %in% names(table(markers_all$gene))[table(markers_all$gene) == 1],]
@@ -534,7 +541,7 @@ markers_all_single <- markers_all[markers_all$gene %in% names(table(markers_all$
 dim(markers_all_single)
 ```
 
-<div class='r_output'> [1] 1441    7
+<div class='r_output'> [1] 1371    7
 </div>
 ```r
 table(table(markers_all_single$gene))
@@ -542,27 +549,27 @@ table(table(markers_all_single$gene))
 
 <div class='r_output'> 
     1 
- 1441
+ 1371
 </div>
 ```r
 table(markers_all_single$cluster)
 ```
 
 <div class='r_output'> 
-   7   5   0   1   2   6   8   9 
- 145 187 165 303  44 158 189 250
+   7   5   0   1   2   6   8 
+  45  24 151 325 520  70 236
 </div>
 ```r
 head(markers_all_single)
 ```
 
-<div class='r_output'>               p_val avg_log2FC pct.1 pct.2    p_val_adj cluster   gene
- GZMK   2.404916e-82  1.5066984 0.298 0.055 8.802235e-78       7   GZMK
- CLSTN3 7.169670e-49  0.8599396 0.255 0.069 2.624171e-44       7 CLSTN3
- MYBL1  3.189092e-48  0.9405144 0.276 0.082 1.167240e-43       7  MYBL1
- ATG2A  4.199373e-43  0.8775682 0.318 0.115 1.537013e-38       7  ATG2A
- PIK3R1 1.509989e-40  0.9409462 0.675 0.464 5.526710e-36       7 PIK3R1
- CD8B   2.363168e-34  0.7106495 0.270 0.092 8.649433e-30       7   CD8B
+<div class='r_output'>                   p_val avg_log2FC pct.1 pct.2     p_val_adj cluster      gene
+ MS4A1     7.868239e-202   2.460640 0.333 0.014 2.879854e-197       7     MS4A1
+ LINC00926 1.243988e-201   1.881382 0.292 0.005 4.553122e-197       7 LINC00926
+ CD79A     2.998365e-173   2.941748 0.336 0.024 1.097432e-168       7     CD79A
+ BANK1     2.474993e-155   1.334570 0.255 0.009 9.058720e-151       7     BANK1
+ IGHM      1.796692e-143   1.835100 0.289 0.021 6.576072e-139       7      IGHM
+ AFF3      6.026634e-129   1.291855 0.257 0.018 2.205808e-124       7      AFF3
 </div>
 Plot a heatmap of genes by cluster for the top 10 marker genes per cluster
 
@@ -597,20 +604,20 @@ markers_all2 <- cbind(head(markers_all), means)
 head(markers_all2)
 ```
 
-<div class='r_output'>               p_val avg_log2FC pct.1 pct.2     p_val_adj cluster  gene
- CTSW  1.556588e-233   2.001720 0.957 0.344 5.697267e-229       7  CTSW
- GZMA  1.132526e-188   1.715444 0.896 0.302 4.145157e-184       7  GZMA
- PRF1  6.009217e-186   1.812446 0.829 0.235 2.199433e-181       7  PRF1
- NKG7  4.692792e-174   1.532782 0.978 0.401 1.717609e-169       7  NKG7
- KLRD1 8.593663e-166   1.565966 0.724 0.186 3.145367e-161       7 KLRD1
- CST7  2.633715e-154   1.379715 0.868 0.290 9.639660e-150       7  CST7
-       mean.in.cluster mean.out.of.cluster
- CTSW         2.774018           0.7832086
- GZMA         2.277050           0.6690290
- PRF1         2.249473           0.5942009
- NKG7         3.743689           1.2028493
- KLRD1        1.470524           0.3646510
- CST7         2.307280           0.7399939
+<div class='r_output'>                   p_val avg_log2FC pct.1 pct.2     p_val_adj cluster      gene
+ MS4A1     7.868239e-202   2.460640 0.333 0.014 2.879854e-197       7     MS4A1
+ LINC00926 1.243988e-201   1.881382 0.292 0.005 4.553122e-197       7 LINC00926
+ CD79A     2.998365e-173   2.941748 0.336 0.024 1.097432e-168       7     CD79A
+ BANK1     2.474993e-155   1.334570 0.255 0.009 9.058720e-151       7     BANK1
+ IGHM      1.796692e-143   1.835100 0.289 0.021 6.576072e-139       7      IGHM
+ AFF3      6.026634e-129   1.291855 0.257 0.018 2.205808e-124       7      AFF3
+           mean.in.cluster mean.out.of.cluster
+ MS4A1           0.8339190         0.020402330
+ LINC00926       0.6112367         0.008039788
+ CD79A           0.9998699         0.034222701
+ BANK1           0.4698104         0.012849977
+ IGHM            0.6230881         0.033921560
+ AFF3            0.4629120         0.023382292
 </div>
 ## Finishing up clusters.
 
@@ -635,8 +642,52 @@ Right now our results ONLY exist in the Ident data object, lets save it to our m
 
 ```r
 experiment.merged$finalcluster <- Idents(experiment.merged)
+head(experiment.merged[[]])
 ```
 
+<div class='r_output'>                        orig.ident nCount_RNA nFeature_RNA batchid percent.mito
+ CCGTTCAAGGTGACCA-PBMC2      PBMC2       1533         1004  Batch1     4.044357
+ ATTGGTGTCGGTTCGG-PBMC2      PBMC2       1225          834  Batch1     7.673469
+ GTAGGCCTCTATCCTA-PBMC2      PBMC2       1109          806  Batch1     4.418395
+ CATTATCCAGGCAGTA-PBMC2      PBMC2       1949         1226  Batch1     7.439713
+ CTGGTCTTCCAAATGC-PBMC2      PBMC2       3074         1303  Batch1     2.374756
+ AGCTTGAGTTGTGGAG-PBMC2      PBMC2       1028          748  Batch1     3.599222
+                             S.Score   G2M.Score Phase old.ident
+ CCGTTCAAGGTGACCA-PBMC2 -0.009757111  0.05114394   G2M     PBMC2
+ ATTGGTGTCGGTTCGG-PBMC2 -0.006619531  0.02301644   G2M     PBMC2
+ GTAGGCCTCTATCCTA-PBMC2  0.019239276 -0.02686039     S     PBMC2
+ CATTATCCAGGCAGTA-PBMC2 -0.077384425  0.04775564   G2M     PBMC2
+ CTGGTCTTCCAAATGC-PBMC2  0.032593746 -0.01541937     S     PBMC2
+ AGCTTGAGTTGTGGAG-PBMC2 -0.051954726 -0.01295370    G1     PBMC2
+                        RNA_snn_res.0.25 RNA_snn_res.0.75 RNA_snn_res.1.25
+ CCGTTCAAGGTGACCA-PBMC2                2                9                9
+ ATTGGTGTCGGTTCGG-PBMC2                4                3                3
+ GTAGGCCTCTATCCTA-PBMC2                5                6                7
+ CATTATCCAGGCAGTA-PBMC2                2                9                9
+ CTGGTCTTCCAAATGC-PBMC2                6                5                6
+ AGCTTGAGTTGTGGAG-PBMC2                5                6                7
+                        RNA_snn_res.1.75 RNA_snn_res.2.25 RNA_snn_res.2.75
+ CCGTTCAAGGTGACCA-PBMC2               11               13               12
+ ATTGGTGTCGGTTCGG-PBMC2                3                2               20
+ GTAGGCCTCTATCCTA-PBMC2                7                8                8
+ CATTATCCAGGCAGTA-PBMC2               11               13               12
+ CTGGTCTTCCAAATGC-PBMC2                6                6                5
+ AGCTTGAGTTGTGGAG-PBMC2                7                8                8
+                        RNA_snn_res.3.25 RNA_snn_res.3.75 seurat_clusters
+ CCGTTCAAGGTGACCA-PBMC2               12               11              11
+ ATTGGTGTCGGTTCGG-PBMC2               23               25              25
+ GTAGGCCTCTATCCTA-PBMC2                8                8               8
+ CATTATCCAGGCAGTA-PBMC2               12               11              11
+ CTGGTCTTCCAAATGC-PBMC2                5                4               4
+ AGCTTGAGTTGTGGAG-PBMC2                8                8               8
+                        finalcluster
+ CCGTTCAAGGTGACCA-PBMC2            2
+ ATTGGTGTCGGTTCGG-PBMC2            5
+ GTAGGCCTCTATCCTA-PBMC2            5
+ CATTATCCAGGCAGTA-PBMC2            2
+ CTGGTCTTCCAAATGC-PBMC2            6
+ AGCTTGAGTTGTGGAG-PBMC2            5
+</div>
 ## Subsetting samples and plotting
 
 If you want to look at the representation of just one sample, or sets of samples
@@ -666,18 +717,18 @@ experiment.merged$samplecluster = paste(experiment.merged$orig.ident,experiment.
 # set the identity to the new variable
 Idents(experiment.merged) <- "samplecluster"
 
-markers.comp <- FindMarkers(experiment.merged, ident.1 = "PBMC2-7", ident.2= "PBMC3-7")
+markers.comp <- FindMarkers(experiment.merged, ident.1 = c("PBMC2-7","PBMC3-7"), ident.2= "PBMC2-5")
 
 head(markers.comp)
 ```
 
 <div class='r_output'>               p_val avg_log2FC pct.1 pct.2    p_val_adj
- RPS4Y1 2.287891e-74  -2.824205 0.000 0.749 8.373911e-70
- MT-CO3 2.417890e-62   1.550807 1.000 0.981 8.849721e-58
- AREG   9.795578e-59  -3.270285 0.088 0.768 3.585280e-54
- IFITM1 7.799421e-56  -1.229551 0.954 0.995 2.854666e-51
- LY6E   3.730028e-49  -1.678001 0.611 0.952 1.365227e-44
- IFITM2 1.457371e-43  -1.234761 0.824 0.990 5.334125e-39
+ RPS19  4.133527e-86   2.281703 0.983 0.725 1.512912e-81
+ RPL28  2.638843e-85   2.088881 0.987 0.749 9.658429e-81
+ RPS3   4.573010e-83   1.877041 0.993 0.814 1.673767e-78
+ RPS27  5.062436e-83   1.947372 0.991 0.870 1.852902e-78
+ RPL13  6.204595e-82   1.776009 0.991 0.931 2.270944e-77
+ TMSB10 2.145713e-80   1.909817 0.985 0.846 7.853524e-76
 </div>
 ```r
 experiment.subset <- subset(experiment.merged, samplecluster %in%  c( "PBMC2-7", "PBMC3-7" ))
@@ -747,7 +798,7 @@ sessionInfo()
   [49] globals_0.14.0        mime_0.10             miniUI_0.1.1.1       
   [52] lifecycle_1.0.0       irlba_2.3.3           goftest_1.2-2        
   [55] future_1.21.0         MASS_7.3-53.1         zoo_1.8-9            
-  [58] scales_1.1.1          spatstat.core_1.65-5  promises_1.2.0.1     
+  [58] scales_1.1.1          spatstat.core_2.0-0   promises_1.2.0.1     
   [61] spatstat.utils_2.1-0  parallel_4.0.3        RColorBrewer_1.1-2   
   [64] yaml_2.2.1            reticulate_1.18       pbapply_1.4-3        
   [67] gridExtra_2.3         sass_0.3.1            rpart_4.1-15         

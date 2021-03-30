@@ -226,6 +226,22 @@ vfp1 <- LabelPoints(plot = vfp1, points = top10, repel = TRUE)
 vfp1
 ```
 
+Instead of using the variable genes function, lets instead assign to variable genes to a set of "minimally expressed" genes.
+
+```{r our_variable_genes}
+dim(experiment.aggregate)
+
+min.value = 2
+min.cells = 10
+num.cells <- Matrix::rowSums(GetAssayData(experiment.aggregate, slot = "count") > min.value)
+genes.use <- names(num.cells[which(num.cells >= min.cells)])
+length(genes.use)
+
+VariableFeatures(experiment.aggregate) <- genes.use
+
+```
+
+
 #### Question(s)
 
 1. Play some with the filtering parameters, see how results change?

@@ -27,14 +27,6 @@ experiment.merged
 Idents(experiment.merged) <- "RNA_snn_res.0.25"
 ```
 
-* logFC: log2 fold change (UCD_Supp_VitE/UCD_Adj_VitE)
-* AveExpr: Average expression, in log2 counts per million, across all cells included in analysis (i.e. those in cluster 0)
-* t: t-statistic, i.e. logFC divided by its standard error
-* P.Value: Raw p-value from test that logFC differs from 0
-* adj.P.Val: Benjamini-Hochberg false discovery rate adjusted p-value
-
-The limma vignette linked above gives more detail on model specification.
-
 # 2. Gene Ontology (GO) Enrichment of Genes Expressed in a Cluster
 ```{r GO, warning=FALSE,error=FALSE,message=FALSE}
 # install org.Hs.eg.db from Bioconductor if not already installed (for mouse only)

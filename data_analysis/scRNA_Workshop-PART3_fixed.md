@@ -7,7 +7,7 @@ output:
 ---
 
 
-Last Updated: March 23 2021, 5pm
+Last Updated: March 24 2021, 11am
 
 # Part 3: Batch Correction Excercise
 
@@ -28,14 +28,38 @@ experiment.aggregate
 
 <div class='r_output'> An object of class Seurat 
  36601 features across 4000 samples within 1 assay 
- Active assay: RNA (36601 features, 2000 variable features)
+ Active assay: RNA (36601 features, 3783 variable features)
 </div>
 ```r
 experiment.test <- experiment.aggregate
+VariableFeatures(experiment.test) <- rownames(experiment.test)
 set.seed(12345)
-rand.genes <- sample(1:nrow(experiment.test), 500,replace = F)
+
+
+samplename = experiment.aggregate$orig.ident
+rand.cells <- sample(1:ncol(experiment.test), 2000,replace = F)
+batchid = rep("Example_Batch1",length(samplename))
+batchid[rand.cells] = "Example_Batch2"
+names(batchid) = colnames(experiment.aggregate)
+
+experiment.test <- AddMetaData(
+  object = experiment.test,
+  metadata = batchid,
+  col.name = "example_batchid")
+
+table(experiment.test$example_batchid)
+```
+
+<div class='r_output'> 
+ Example_Batch1 Example_Batch2 
+           2000           2000
+</div>
+```r
 mat <- as.matrix(GetAssayData(experiment.test, slot="data"))
-mat[rand.genes,experiment.test$batchid=="Batch2"] <- mat[rand.genes,experiment.test$batchid=="Batch2"] + 0.22
+
+rand.genes <- sample(VariableFeatures(experiment.test), 500,replace = F)
+
+mat[rand.genes,experiment.test$example_batchid=="Example_Batch2"] <- mat[rand.genes,experiment.test$example_batchid=="Example_Batch2"] + 0.22
 experiment.test = SetAssayData(experiment.test, slot="data", new.data= mat )
 rm(mat)
 ```
@@ -62,13 +86,13 @@ experiment.test.noc <- ScaleData(object = experiment.test)
 
 ```r
 experiment.test.noc <- RunPCA(object = experiment.test.noc)
-DimPlot(object = experiment.test.noc, group.by = "batchid", reduction = "pca")
+DimPlot(object = experiment.test.noc, group.by = "example_batchid", reduction = "pca")
 ```
 
 <img src="scRNA_Workshop-PART3_files/figure-html/pca_none-1.png" style="display: block; margin: auto;" />
 
 ```r
-DimPlot(object = experiment.test.noc, group.by = "batchid", dims = c(2,3), reduction = "pca")
+DimPlot(object = experiment.test.noc, group.by = "example_batchid", dims = c(2,3), reduction = "pca")
 ```
 
 <img src="scRNA_Workshop-PART3_files/figure-html/pca_none-2.png" style="display: block; margin: auto;" />
@@ -89,7 +113,7 @@ We use 10 components in downstream analyses. Using more components more closely 
 ```r
 pcs.use <- 10
 experiment.test.noc <- RunTSNE(object = experiment.test.noc, dims = 1:pcs.use)
-DimPlot(object = experiment.test.noc,  group.by = "batchid")
+DimPlot(object = experiment.test.noc,  group.by = "example_batchid")
 ```
 
 <img src="scRNA_Workshop-PART3_files/figure-html/tsne-1.png" style="display: block; margin: auto;" />
@@ -100,11 +124,11 @@ Use vars.to.regress to correct for the sample to sample differences and percent 
 
 ```r
 experiment.test.regress <- ScaleData(object = experiment.test,
-                    vars.to.regress = c("batchid"), model.use = "linear")
+                    vars.to.regress = c("example_batchid"), model.use = "linear")
 
-experiment.test.regress <- RunPCA(object =experiment.test.regress)
+experiment.test.regress <- RunPCA(object =experiment.test.regress,features=rownames(experiment.test.noc))
 
-DimPlot(object = experiment.test.regress, group.by = "batchid", reduction = "pca")
+DimPlot(object = experiment.test.regress, group.by = "example_batchid", reduction = "pca")
 ```
 
 <img src="scRNA_Workshop-PART3_files/figure-html/scaledata_regress-1.png" style="display: block; margin: auto;" />
@@ -112,8 +136,8 @@ DimPlot(object = experiment.test.regress, group.by = "batchid", reduction = "pca
 ### Corrected TSNE Plot
 
 ```r
-experiment.test.regress <- RunTSNE(object = experiment.test.regress, dims.use = 1:pcs.use)
-DimPlot(object = experiment.test.regress, group.by = "batchid", reduction = "tsne")
+experiment.test.regress <- RunTSNE(object = experiment.test.regress, dims.use = 1:50)
+DimPlot(object = experiment.test.regress, group.by = "example_batchid", reduction = "tsne")
 ```
 
 <img src="scRNA_Workshop-PART3_files/figure-html/tsne_2-1.png" style="display: block; margin: auto;" />
@@ -174,7 +198,7 @@ sessionInfo()
   [46] stringr_1.4.0         globals_0.14.0        mime_0.10            
   [49] miniUI_0.1.1.1        lifecycle_1.0.0       irlba_2.3.3          
   [52] goftest_1.2-2         future_1.21.0         MASS_7.3-53.1        
-  [55] zoo_1.8-9             scales_1.1.1          spatstat.core_1.65-5 
+  [55] zoo_1.8-9             scales_1.1.1          spatstat.core_2.0-0  
   [58] promises_1.2.0.1      spatstat.utils_2.1-0  parallel_4.0.3       
   [61] RColorBrewer_1.1-2    yaml_2.2.1            reticulate_1.18      
   [64] pbapply_1.4-3         gridExtra_2.3         ggplot2_3.3.3        

@@ -67,7 +67,7 @@ experiment.test.noc <- ScaleData(object = experiment.test)
 
 ### Run PCA
 ```{r pca_none, warning=FALSE,error=FALSE,message=FALSE, fig.align="center", fig.caption="Uncorrected PCA plot"}
-experiment.test.noc <- RunPCA(object = experiment.test.noc, features=rownames(experiment.test.noc))
+experiment.test.noc <- RunPCA(object = experiment.test.noc)
 DimPlot(object = experiment.test.noc, group.by = "example_batchid", reduction = "pca")
 DimPlot(object = experiment.test.noc, group.by = "example_batchid", dims = c(2,3), reduction = "pca")
 ```
@@ -91,7 +91,6 @@ DimPlot(object = experiment.test.noc,  group.by = "example_batchid")
 
 Use vars.to.regress to correct for the sample to sample differences and percent mitochondria
 ```{r scaledata_regress, warning=FALSE,error=FALSE,message=FALSE, fig.align="center", fig.caption="Corrected PCA Plot"}
-head(experiment.test.regress[[]])
 experiment.test.regress <- ScaleData(object = experiment.test,
                     vars.to.regress = c("example_batchid"), model.use = "linear")
 

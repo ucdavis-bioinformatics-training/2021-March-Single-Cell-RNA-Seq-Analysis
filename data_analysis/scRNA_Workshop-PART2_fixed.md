@@ -25,7 +25,6 @@ library(kableExtra)
 ```r
 load(file="original_seurat_object.RData")
 experiment.aggregate
-set.seed(12345)
 ```
 
 <div class='r_output'> An object of class Seurat 
@@ -844,6 +843,30 @@ vfp1
 
 ![](scRNA_Workshop-PART2_files/figure-html/find_variable_genes-1.png)<!-- -->
 
+Instead of using the variable genes function, lets instead assign to variable genes to a set of "minimally expressed" genes.
+
+
+```r
+dim(experiment.aggregate)
+```
+
+<div class='r_output'> [1] 36601  4000
+</div>
+```r
+min.value = 2
+min.cells = 10
+num.cells <- Matrix::rowSums(GetAssayData(experiment.aggregate, slot = "count") > min.value)
+genes.use <- names(num.cells[which(num.cells >= min.cells)])
+length(genes.use)
+```
+
+<div class='r_output'> [1] 3783
+</div>
+```r
+VariableFeatures(experiment.aggregate) <- genes.use
+```
+
+
 #### Question(s)
 
 1. Play some with the filtering parameters, see how results change?
@@ -903,7 +926,7 @@ sessionInfo()
   [40] future.apply_1.7.0    BiocGenerics_0.34.0   abind_1.4-5          
   [43] scales_1.1.1          DBI_1.1.1             miniUI_0.1.1.1       
   [46] Rcpp_1.0.6            viridisLite_0.3.0     xtable_1.8-4         
-  [49] progress_1.2.2        reticulate_1.18       spatstat.core_1.65-5 
+  [49] progress_1.2.2        reticulate_1.18       spatstat.core_2.0-0  
   [52] bit_4.0.4             stats4_4.0.3          htmlwidgets_1.5.3    
   [55] httr_1.4.2            RColorBrewer_1.1-2    ellipsis_0.3.1       
   [58] ica_1.0-2             farver_2.1.0          pkgconfig_2.0.3      

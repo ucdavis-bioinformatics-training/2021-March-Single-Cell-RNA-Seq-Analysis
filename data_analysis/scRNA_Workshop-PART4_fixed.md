@@ -26,7 +26,7 @@ experiment.aggregate
 
 <div class='r_output'> An object of class Seurat 
  36601 features across 4000 samples within 1 assay 
- Active assay: RNA (36601 features, 2000 variable features)
+ Active assay: RNA (36601 features, 3783 variable features)
 </div>
 
 ## Now doing so for 'real'
@@ -51,7 +51,7 @@ Next we perform PCA (principal components analysis) on the scaled data.
 
 
 ```r
-experiment.aggregate <- RunPCA(object = experiment.aggregate)
+experiment.aggregate <- RunPCA(object = experiment.aggregate, npcs=100)
 ```
 
 Seurat then provides a number of ways to visualize the PCA results
@@ -104,7 +104,7 @@ ElbowPlot plots the standard deviations (or approximate singular values if runni
 
 
 ```r
-ElbowPlot(experiment.aggregate)
+ElbowPlot(experiment.aggregate, ndims = 0:100)
 ```
 
 ![](scRNA_Workshop-PART4_files/figure-html/elbow-1.png)<!-- -->
@@ -113,13 +113,13 @@ The JackStraw function randomly permutes a subset of data, and calculates projec
 
 
 ```r
-experiment.aggregate <- JackStraw(object = experiment.aggregate, dims = 40)
+experiment.aggregate <- JackStraw(object = experiment.aggregate, dims = 100)
 ```
 
 
 ```r
-experiment.aggregate <- ScoreJackStraw(experiment.aggregate, dims = 1:40)
-JackStrawPlot(object = experiment.aggregate, dims = 1:40)
+experiment.aggregate <- ScoreJackStraw(experiment.aggregate, dims = 1:100)
+JackStrawPlot(object = experiment.aggregate, dims = 1:100) + theme(legend.position="bottom")
 ```
 
 ![](scRNA_Workshop-PART4_files/figure-html/plot_jackstraw-1.png)<!-- -->
@@ -178,7 +178,7 @@ sessionInfo()
   [46] stringr_1.4.0         globals_0.14.0        mime_0.10            
   [49] miniUI_0.1.1.1        lifecycle_1.0.0       irlba_2.3.3          
   [52] goftest_1.2-2         future_1.21.0         MASS_7.3-53.1        
-  [55] zoo_1.8-9             scales_1.1.1          spatstat.core_1.65-5 
+  [55] zoo_1.8-9             scales_1.1.1          spatstat.core_2.0-0  
   [58] promises_1.2.0.1      spatstat.utils_2.1-0  parallel_4.0.3       
   [61] RColorBrewer_1.1-2    yaml_2.2.1            reticulate_1.18      
   [64] pbapply_1.4-3         gridExtra_2.3         sass_0.3.1           
